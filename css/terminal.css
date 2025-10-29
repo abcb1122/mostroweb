@@ -1,0 +1,346 @@
+/**
+ * Terminal Retro CSS
+ * Estilos principales para la interfaz tipo terminal años 80
+ */
+
+/* ============================================
+   VARIABLES CSS - TEMA VERDE (DEFAULT)
+   ============================================ */
+:root {
+  /* Colores */
+  --bg-primary: #000000;
+  --bg-secondary: #001100;
+  --text-primary: #00ff00;
+  --text-secondary: #00aa00;
+  --text-dim: #006600;
+  --text-error: #ff0000;
+  --text-warning: #ffaa00;
+  --text-info: #00aaff;
+  --text-success: #00ff00;
+  --cursor-color: #00ff00;
+  --selection-bg: #003300;
+  --selection-text: #00ff00;
+  --border-color: #004400;
+  --glow-color: rgba(0, 255, 0, 0.3);
+  --scanline-color: rgba(0, 0, 0, 0.05);
+
+  /* Tipografía */
+  --font-mono: 'Courier New', 'Consolas', 'Monaco', 'Lucida Console', monospace;
+  --font-size: 14px;
+  --line-height: 1.6;
+  --letter-spacing: 0.5px;
+
+  /* Espaciado */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+
+  /* Animaciones */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+}
+
+/* ============================================
+   BODY Y LAYOUT BASE
+   ============================================ */
+body {
+  font-family: var(--font-mono);
+  font-size: var(--font-size);
+  line-height: var(--line-height);
+  letter-spacing: var(--letter-spacing);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  overflow: hidden;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============================================
+   TERMINAL CONTAINER
+   ============================================ */
+.terminal-container {
+  width: 90vw;
+  height: 90vh;
+  max-width: 1400px;
+  max-height: 900px;
+  background: var(--bg-primary);
+  border: 2px solid var(--border-color);
+  box-shadow:
+    0 0 20px var(--glow-color),
+    inset 0 0 20px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Efecto CRT scanlines (sutil) */
+.terminal-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    transparent 50%,
+    var(--scanline-color) 50%
+  );
+  background-size: 100% 4px;
+  pointer-events: none;
+  z-index: 10;
+  animation: scanlines 8s linear infinite;
+}
+
+@keyframes scanlines {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(4px); }
+}
+
+/* ============================================
+   TERMINAL HEADER
+   ============================================ */
+.terminal-header {
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  padding: var(--spacing-sm) var(--spacing-md);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.terminal-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  color: var(--text-primary);
+  font-weight: bold;
+  text-shadow: 0 0 5px var(--glow-color);
+}
+
+.title-icon {
+  font-size: 18px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.title-version {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-left: var(--spacing-xs);
+}
+
+.terminal-controls {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.btn-control {
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  line-height: 1;
+}
+
+.btn-control:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border-color: var(--text-primary);
+  box-shadow: 0 0 5px var(--glow-color);
+}
+
+/* ============================================
+   TERMINAL OUTPUT AREA
+   ============================================ */
+.terminal-output {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--spacing-md);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  position: relative;
+  text-shadow: 0 0 5px var(--glow-color);
+}
+
+/* Scrollbar personalizado */
+.terminal-output::-webkit-scrollbar {
+  width: 12px;
+}
+
+.terminal-output::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-left: 1px solid var(--border-color);
+}
+
+.terminal-output::-webkit-scrollbar-thumb {
+  background: var(--text-dim);
+  border: 2px solid var(--bg-primary);
+}
+
+.terminal-output::-webkit-scrollbar-thumb:hover {
+  background: var(--text-secondary);
+}
+
+/* ============================================
+   TERMINAL INPUT LINE
+   ============================================ */
+.terminal-input-line {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.prompt {
+  color: var(--text-primary);
+  font-weight: bold;
+  margin-right: var(--spacing-sm);
+  text-shadow: 0 0 5px var(--glow-color);
+  user-select: none;
+}
+
+.terminal-input {
+  flex: 1;
+  background: transparent;
+  color: var(--text-primary);
+  border: none;
+  outline: none;
+  font-family: var(--font-mono);
+  font-size: var(--font-size);
+  caret-color: transparent;
+  text-shadow: 0 0 5px var(--glow-color);
+}
+
+.cursor {
+  color: var(--cursor-color);
+  font-weight: bold;
+  animation: blink 1s step-end infinite;
+  user-select: none;
+  margin-left: 2px;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* ============================================
+   TERMINAL STATUS BAR
+   ============================================ */
+.terminal-statusbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-xs) var(--spacing-md);
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-color);
+  font-size: 12px;
+  height: 30px;
+  flex-shrink: 0;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  color: var(--text-secondary);
+}
+
+.status-icon {
+  font-size: 10px;
+}
+
+.status-relays.connected .status-icon {
+  color: var(--text-success);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.status-relays.connecting .status-icon {
+  color: var(--text-warning);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.status-help {
+  font-style: italic;
+}
+
+.status-help strong {
+  color: var(--text-primary);
+  font-weight: bold;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .terminal-container {
+    width: 95vw;
+    height: 95vh;
+  }
+
+  :root {
+    --font-size: 12px;
+  }
+
+  .terminal-header,
+  .terminal-input-line {
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+
+  .terminal-output {
+    padding: var(--spacing-sm);
+  }
+
+  .status-help {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .terminal-container {
+    width: 100vw;
+    height: 100vh;
+    max-width: none;
+    max-height: none;
+    border: none;
+  }
+
+  :root {
+    --font-size: 11px;
+  }
+
+  .title-version {
+    display: none;
+  }
+}

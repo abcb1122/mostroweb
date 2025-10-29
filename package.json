@@ -1,0 +1,32 @@
+{
+  "name": "mostroweb",
+  "version": "0.1.0",
+  "description": "Cliente web frontend estilo terminal retro para Mostro P2P",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "echo \"Tests coming soon\" && exit 0"
+  },
+  "keywords": [
+    "mostro",
+    "nostr",
+    "p2p",
+    "bitcoin",
+    "lightning",
+    "terminal"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "nostr-tools": "^2.5.2",
+    "uuid": "^10.0.0",
+    "crypto-js": "^4.2.0"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
