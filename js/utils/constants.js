@@ -123,6 +123,16 @@ export const TIMEOUTS = {
   COMMAND_DEBOUNCE: 300
 };
 
+// Configuración de encriptación
+export const CRYPTO_CONFIG = {
+  PBKDF2_ITERATIONS: 100000,    // Iteraciones para derivación de clave
+  SALT_LENGTH: 16,               // Bytes de salt (128 bits)
+  AES_MODE: 'CBC',               // Modo de encriptación AES
+  PADDING: 'Pkcs7',              // Padding para AES
+  MIN_PASSWORD_LENGTH: 8,        // Mínimo de caracteres en password
+  KEY_SIZE: 256                  // Bits de la clave de encriptación
+};
+
 // Mensajes de error
 export const ERROR_MESSAGES = {
   NOSTR_NOT_LOADED: 'Nostr-tools library not loaded yet',
@@ -131,7 +141,16 @@ export const ERROR_MESSAGES = {
   RELAY_CONNECTION_FAILED: 'Failed to connect to relay',
   MESSAGE_SEND_FAILED: 'Failed to send message',
   INVALID_PARAMETER: 'Invalid parameter provided',
-  COMMAND_NOT_IMPLEMENTED: 'Command not yet implemented'
+  COMMAND_NOT_IMPLEMENTED: 'Command not yet implemented',
+  WRONG_PASSWORD: 'Wrong password. Please try again.',
+  KEY_LOCKED: 'Session locked. Use /start to unlock.',
+  INVALID_KEY_FORMAT: 'Invalid key format. Use nsec or hex.',
+  PASSWORD_TOO_SHORT: 'Password must be at least 8 characters.',
+  PASSWORDS_DONT_MATCH: 'Passwords do not match.',
+  DECRYPTION_FAILED: 'Decryption failed. Wrong password or corrupted data.',
+  NO_IDENTITY_FOUND: 'No identity found. Use /start to create one.',
+  IDENTITY_ALREADY_EXISTS: 'Identity already exists. Use /start to unlock or /import to replace.',
+  EXPORT_REQUIRES_UNLOCK: 'You must unlock your session first. Use /start.'
 };
 
 // Mensajes de éxito
@@ -140,7 +159,12 @@ export const SUCCESS_MESSAGES = {
   KEY_IMPORTED: 'Private key imported successfully',
   RELAY_CONNECTED: 'Connected to relay',
   MESSAGE_SENT: 'Message sent successfully',
-  COMMAND_EXECUTED: 'Command executed successfully'
+  COMMAND_EXECUTED: 'Command executed successfully',
+  SESSION_UNLOCKED: 'Session unlocked successfully',
+  SESSION_LOCKED: 'Session locked. Keys cleared from memory.',
+  PASSWORD_CHANGED: 'Password changed successfully',
+  KEY_ENCRYPTED: 'Private key encrypted and stored securely',
+  IDENTITY_CREATED: 'Identity created successfully'
 };
 
 // Regex patterns
@@ -162,8 +186,15 @@ export const COMMANDS = {
   STATUS: '/status',
   EXIT: '/exit',
 
-  // Fase 2+ (placeholder)
+  // Fase 2 - Identity & Key Management
   START: '/start',
+  IMPORT: '/import',
+  EXPORT: '/export',
+  IDENTITY: '/identity',
+  LOCK: '/lock',
+  CHANGEPASS: '/changepass',
+
+  // Fase 2+ (placeholder)
   RESTORE: '/restore',
   NEWSELL: '/newsell',
   NEWBUY: '/newbuy',
@@ -199,6 +230,42 @@ export const COMMAND_INFO = {
     description: 'Show connection status',
     usage: '/status',
     aliases: ['stat']
+  },
+  [COMMANDS.START]: {
+    description: 'Start a new session (generate or unlock identity)',
+    usage: '/start',
+    aliases: ['s'],
+    examples: ['/start']
+  },
+  [COMMANDS.IMPORT]: {
+    description: 'Import an existing Nostr private key',
+    usage: '/import',
+    aliases: [],
+    examples: ['/import']
+  },
+  [COMMANDS.IDENTITY]: {
+    description: 'Show your identity information',
+    usage: '/identity',
+    aliases: ['id', 'whoami'],
+    examples: ['/identity']
+  },
+  [COMMANDS.EXPORT]: {
+    description: 'Export your private key for backup',
+    usage: '/export',
+    aliases: ['backup'],
+    examples: ['/export']
+  },
+  [COMMANDS.LOCK]: {
+    description: 'Lock session and clear keys from memory',
+    usage: '/lock',
+    aliases: ['logout'],
+    examples: ['/lock']
+  },
+  [COMMANDS.CHANGEPASS]: {
+    description: 'Change encryption password',
+    usage: '/changepass',
+    aliases: ['passwd'],
+    examples: ['/changepass']
   }
 };
 
@@ -239,6 +306,7 @@ export default {
   DEFAULT_SETTINGS,
   THEMES,
   TIMEOUTS,
+  CRYPTO_CONFIG,
   ERROR_MESSAGES,
   SUCCESS_MESSAGES,
   PATTERNS,

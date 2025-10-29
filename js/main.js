@@ -6,6 +6,7 @@
 import { APP_NAME, APP_VERSION, ENVIRONMENT } from './utils/constants.js';
 import Logger from './utils/logger.js';
 import Terminal from './ui/terminal.js';
+import KeyManager from './core/keyManager.js';
 
 /**
  * Estado global de la aplicación
@@ -48,6 +49,11 @@ async function init() {
     if (!success) {
       throw new Error('Failed to initialize terminal');
     }
+
+    // Inicializar KeyManager
+    Logger.debug('Main: Initializing KeyManager...');
+    await KeyManager.init();
+    Logger.info('Main: KeyManager initialized successfully');
 
     // Marcar como inicializado
     app.initialized = true;
@@ -142,12 +148,14 @@ window.MostroWeb = {
   app,
   Logger,
   Terminal,
+  KeyManager,
 
   // Métodos útiles para debugging
   getState() {
     return {
       initialized: app.initialized,
       terminal: Terminal.getState(),
+      keyManager: KeyManager.getState(),
       environment: ENVIRONMENT
     };
   },

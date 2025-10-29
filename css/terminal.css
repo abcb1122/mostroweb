@@ -301,6 +301,44 @@ body {
 }
 
 /* ============================================
+   INPUT PROMPTS (TEMPORAL)
+   ============================================ */
+.terminal-input-wrapper {
+  display: flex;
+  align-items: center;
+  margin: var(--spacing-xs) 0;
+  padding: var(--spacing-xs);
+  background: rgba(0, 255, 0, 0.05);
+  border-left: 2px solid var(--text-primary);
+}
+
+.terminal-prompt-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  font-size: var(--font-size);
+  padding: var(--spacing-xs);
+  outline: none;
+  letter-spacing: var(--letter-spacing);
+}
+
+.terminal-prompt-input::placeholder {
+  color: var(--text-dim);
+  opacity: 0.6;
+}
+
+.terminal-prompt-input:focus {
+  background: rgba(0, 255, 0, 0.1);
+  box-shadow: 0 0 8px var(--glow-color);
+}
+
+.terminal-prompt-input[type="password"] {
+  letter-spacing: 0.3em;
+}
+
+/* ============================================
    RESPONSIVE
    ============================================ */
 @media (max-width: 768px) {
