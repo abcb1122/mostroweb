@@ -59,24 +59,36 @@ Crear un **cliente web frontend** que proporcione una interfaz gráfica minimali
 │  - Encryption/Decryption (NIP-44 o NIP-04)              │
 └────┬─────────────────────────────────────────────────────┘
      │
-     │ WebSocket
+     │ WebSocket (wss://)
      │
 ┌────▼─────────────────────────────────────────────────────┐
-│           Nostr Relays (múltiples)                       │
-│  - relay.mostro.network                                  │
-│  - nostr-pub.wellorder.net                               │
+│           Nostr Relays Públicos (múltiples)              │
 │  - relay.damus.io                                        │
+│  - nostr-pub.wellorder.net                               │
+│  - nos.lol                                               │
+│  - relay.snort.social                                    │
 └────┬─────────────────────────────────────────────────────┘
      │
-     │ Nostr Events (Kind 1059 - GiftWrap)
-     │
-┌────▼─────────────────────────────────────────────────────┐
-│              Mostro Daemon                               │
-│  - Procesa mensajes                                      │
-│  - Gestiona órdenes P2P                                  │
-│  - Integra con Lightning Network                         │
-│  - Publica eventos NIP-33 (órdenes públicas)            │
-└──────────────────────────────────────────────────────────┘
+     │ Eventos Públicos (Kind 34242)  │  Mensajes Privados
+     │ Órdenes descubribles           │  (Kind 1059 - GiftWrap)
+     │                                 │
+     ├─────────────────────────────────┴──────────────────┐
+     │                                                     │
+┌────▼────────────┐  ┌──────────────┐  ┌─────────────────▼──┐
+│ Mostro Daemon A │  │ Mostro D. B  │  │  Mostro Daemon C   │
+│ npub: AAA...    │  │ npub: BBB... │  │  npub: CCC...      │
+│ - LND Node      │  │ - LND Node   │  │  - LND Node        │
+│ - SQLite DB     │  │ - SQLite DB  │  │  - SQLite DB       │
+│ - Fee: 0.3%     │  │ - Fee: 0.5%  │  │  - Fee: 0.2%       │
+└─────────────────┘  └──────────────┘  └────────────────────┘
+   (Independientes, descentralizados, intercambiables)
+
+ARQUITECTURA DESCENTRALIZADA:
+- Múltiples Mostro daemons ejecutándose independientemente
+- Cada uno publica órdenes como eventos públicos (Kind 34242)
+- MostroWeb descubre órdenes dinámicamente buscando en relays
+- Usuario puede interactuar con cualquier Mostro instance
+- NO hay "Mostro central" - es un protocolo P2P abierto
 ```
 
 ### 2.2 Componentes del Frontend
@@ -175,24 +187,40 @@ Todos los mensajes a Mostro siguen este formato:
 ```
 
 #### B. Replaceable Events (Kind 34242 - NIP-33)
-**Uso:** Publicación de órdenes, disputas, info del nodo
+**Uso:** Publicación de órdenes P2P (PÚBLICAS y descubribles)
 
 **Características:**
-- Eventos públicos (no encriptados)
+- Eventos públicos (no encriptados) - CUALQUIER cliente puede leerlos
+- Publicados por Mostro daemons cuando usuarios crean órdenes
 - Identificados por tag `d` (unique ID)
 - Reemplazables (último evento prevalece)
-- Consultables por cualquier usuario
+- Descubribles mediante filtros de tags
 
-**Tags importantes:**
-- `d`: Order ID
+**Estructura de Descubrimiento:**
+```javascript
+// Filtro para descubrir órdenes de TODOS los Mostros
+{
+  kinds: [34242],
+  "#y": ["mostrop2p"],  // Marketplace identifier
+  "#z": ["order"],       // Event type
+  "#s": ["pending"]      // Status filter
+}
+```
+
+**Tags importantes (NIP-69):**
+- `d`: Order ID único
 - `k`: Tipo (buy/sell)
 - `f`: Código moneda fiat
-- `s`: Estado (pending/active/etc)
+- `s`: Estado (pending/active/success/canceled/etc)
 - `amt`: Monto en satoshis
 - `fa`: Monto en fiat
 - `pm`: Método de pago
-- `y`: "mostrop2p"
-- `z`: "order"
+- `y`: "mostrop2p" (identificador de marketplace)
+- `z`: "order" (tipo de evento)
+- `premium`: Porcentaje de premium
+- `source`: Link a la orden (relay info)
+
+**IMPORTANTE:** El `pubkey` del evento identifica qué Mostro daemon publicó la orden. MostroWeb extrae este pubkey dinámicamente para interactuar con ese Mostro específico.
 
 ### 3.3 Sistema de Autenticación
 
@@ -524,22 +552,25 @@ Si se decide usar un servidor simple para servir archivos:
 
 ### 6.4 Configuración de Relays
 
-**Relays recomendados para Mostro:**
+**Relays Nostr públicos recomendados:**
 ```javascript
 const DEFAULT_RELAYS = [
-  'wss://relay.mostro.network',      // Relay oficial Mostro (si existe)
-  'wss://nostr-pub.wellorder.net',
   'wss://relay.damus.io',
+  'wss://nostr-pub.wellorder.net',
   'wss://nos.lol',
-  'wss://relay.snort.social'
+  'wss://relay.snort.social',
+  'wss://relay.nostr.band'
 ];
 ```
 
 **Características:**
-- Múltiples relays para redundancia
+- Múltiples relays públicos para descubrimiento amplio de órdenes
 - Auto-reconexión en caso de fallo
 - Preferencia de lectura: relay más rápido
 - Escritura: broadcast a todos los relays
+- Usuario puede añadir relays adicionales según preferencia
+
+**IMPORTANTE:** No hay "relay oficial de Mostro". Cada Mostro daemon publica a sus propios relays configurados. MostroWeb debe conectarse a múltiples relays públicos para maximizar el descubrimiento de órdenes.
 
 ---
 
@@ -812,18 +843,48 @@ const privateKey = decrypted.toString(CryptoJS.enc.Utf8);
 - **Mostro Daemon:** Documentación en repositorio mostro
 - **NIPs:** https://github.com/nostr-protocol/nips
 
-### 10.4 Public Key de Mostro
+### 10.4 Public Keys de Mostro (Modelo Descentralizado)
 
-**IMPORTANTE:** Obtener el public key oficial del nodo Mostro para:
-- Enviar mensajes GiftWrap dirigidos a Mostro
-- Verificar respuestas firmadas por Mostro
-- Validar eventos NIP-33 publicados
+**CRÍTICO - NO HAY PUBLIC KEY FIJA GLOBAL:**
 
+Mostro es un protocolo descentralizado. Múltiples instancias independientes de Mostro pueden ejecutarse simultáneamente, cada una con su propia public key.
+
+**Descubrimiento Dinámico:**
 ```javascript
-// Ejemplo (reemplazar con pubkey real)
-const MOSTRO_PUBKEY = "npub1..."; // Formato npub
-const MOSTRO_PUBKEY_HEX = "...";  // Formato hexadecimal
+// ❌ INCORRECTO: Asumir una public key fija
+const MOSTRO_PUBKEY = "npub1..."; // NO EXISTE
+
+// ✅ CORRECTO: Extraer pubkey del evento de orden
+async function discoverOrders() {
+  const orderEvents = await pool.list(relays, [{
+    kinds: [34242],
+    "#y": ["mostrop2p"],
+    "#z": ["order"]
+  }]);
+
+  // Cada evento tiene el pubkey del Mostro que lo publicó
+  orderEvents.forEach(event => {
+    const mostroPubkey = event.pubkey;  // Dinámico por orden
+    const orderId = event.tags.find(t => t[0] === 'd')[1];
+
+    console.log(`Orden ${orderId} publicada por Mostro ${mostroPubkey}`);
+  });
+}
+
+// Cuando usuario interactúa con una orden
+function selectOrder(orderEvent) {
+  const targetMostro = orderEvent.pubkey;  // Extraer del evento
+
+  // Enviar GiftWrap a ESTE Mostro específico
+  sendGiftWrap(message, targetMostro);
+}
 ```
+
+**Implicaciones:**
+- MostroWeb NO necesita configurar una public key fija
+- Cada orden lleva el pubkey del Mostro que la creó
+- Usuario puede interactuar con múltiples Mostros simultáneamente
+- Verificación de respuestas: comparar con pubkey extraído de la orden
 
 ---
 
@@ -831,32 +892,35 @@ const MOSTRO_PUBKEY_HEX = "...";  // Formato hexadecimal
 
 ### 11.1 Preguntas a Resolver
 
-1. **¿Cuál es el public key oficial del nodo Mostro?**
-   - Necesario para enviar mensajes y validar respuestas
+1. **¿Qué relays Nostr recomiendan para descubrimiento de órdenes?**
+   - ¿Hay relays específicos donde Mostros publican?
+   - ¿O usar relays públicos genéricos?
+   - Lista recomendada de relays para mejor cobertura
 
-2. **¿Qué relays usa Mostro oficialmente?**
-   - ¿Hay relay dedicado `relay.mostro.network`?
-   - ¿O usa relays públicos genéricos?
-
-3. **¿NIP-44 o NIP-04 para encriptación?**
+2. **¿NIP-44 o NIP-04 para encriptación de GiftWraps?**
    - NIP-44 es más moderno y seguro
-   - Verificar compatibilidad con Mostro
+   - Verificar compatibilidad con Mostro daemon
 
-4. **¿Proof of Work (PoW) es obligatorio?**
+3. **¿Proof of Work (PoW) es obligatorio?**
    - Algunos mensajes en Mostro mencionan PoW opcional
    - ¿Es necesario implementarlo en cliente web?
 
-5. **¿Rate limiting por parte de Mostro?**
-   - ¿Cuántos mensajes por minuto permite?
-   - ¿Necesitamos queue local?
+4. **¿Rate limiting por parte de Mostro?**
+   - ¿Cuántos mensajes por minuto acepta cada Mostro?
+   - ¿Necesitamos queue local de mensajes?
 
-6. **¿Invoice validation?**
+5. **¿Invoice validation?**
    - ¿Validar formato de Lightning invoices en frontend?
-   - ¿O delegar validación a Mostro?
+   - ¿O delegar validación a Mostro daemon?
 
-7. **¿Timeout de órdenes?**
+6. **¿Timeout de órdenes?**
    - ¿Cuánto tiempo permanece activa una orden?
-   - ¿Auto-cancelación tras X tiempo?
+   - ¿Auto-cancelación tras X tiempo de inactividad?
+
+7. **¿Cómo identificar Mostros confiables?**
+   - ¿Sistema de reputación para Mostro instances?
+   - ¿Verificar fees antes de interactuar?
+   - ¿Whitelist/blacklist de Mostros conocidos?
 
 ### 11.2 Testing con Testnet
 

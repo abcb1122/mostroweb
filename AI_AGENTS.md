@@ -77,12 +77,16 @@ Este documento sirve como guía para agentes de IA que trabajen en el proyecto *
 ### Relays Nostr Predeterminados
 ```javascript
 const DEFAULT_RELAYS = [
-  'wss://relay.mostro.network',
-  'wss://nostr-pub.wellorder.net',
   'wss://relay.damus.io',
+  'wss://nostr-pub.wellorder.net',
   'wss://nos.lol',
-  'wss://relay.snort.social'
+  'wss://relay.snort.social',
+  'wss://relay.nostr.band'
 ];
+
+// IMPORTANTE: No hay "relay oficial de Mostro"
+// Cada Mostro daemon publica a sus propios relays configurados
+// MostroWeb se conecta a múltiples relays públicos para maximizar descubrimiento
 ```
 
 ---
@@ -181,7 +185,23 @@ Todos los mensajes siguen este formato:
 - Contenido: Seal event (kind 13)
 
 #### B. Replaceable Events (Kind 34242 - NIP-33)
-**Uso:** Publicación de órdenes públicas
+**Uso:** Publicación de órdenes públicas (descubribles por todos)
+
+**Características:**
+- Publicados por Mostro daemons cuando se crean órdenes
+- PÚBLICOS - cualquier cliente puede descubrirlos
+- El `pubkey` del evento identifica qué Mostro publicó la orden
+- MostroWeb extrae este pubkey dinámicamente para interactuar
+
+**Filtro de descubrimiento:**
+```javascript
+{
+  kinds: [34242],
+  "#y": ["mostrop2p"],  // Marketplace identifier
+  "#z": ["order"],       // Event type
+  "#s": ["pending"]      // Status filter (opcional)
+}
+```
 
 **Tags importantes:**
 - `d`: Order ID
@@ -193,6 +213,8 @@ Todos los mensajes siguen este formato:
 - `pm`: Método de pago
 - `y`: "mostrop2p"
 - `z`: "order"
+- `premium`: Porcentaje de premium
+- `source`: Link a la orden
 
 ### 4.3 Sistema de Autenticación
 
@@ -774,7 +796,7 @@ if (CONFIG.environment === 'mainnet') {
 ### 10.1 Enviar Comando a Mostro
 
 ```javascript
-async function sendMostroCommand(action, payload, orderId = null) {
+async function sendMostroCommand(action, payload, mostroPubkey, orderId = null) {
   try {
     // 1. Incrementar trade_index
     const tradeIndex = incrementTradeIndex();
@@ -791,10 +813,10 @@ async function sendMostroCommand(action, payload, orderId = null) {
       }
     };
 
-    // 3. Crear GiftWrap
+    // 3. Crear GiftWrap dirigido al Mostro específico
     const giftWrap = await createGiftWrap(
       JSON.stringify([message]),
-      MOSTRO_PUBKEY
+      mostroPubkey  // CRÍTICO: pubkey extraído de la orden
     );
 
     // 4. Publicar a relays
@@ -808,6 +830,16 @@ async function sendMostroCommand(action, payload, orderId = null) {
     throw error;
   }
 }
+
+// Ejemplo de uso:
+const order = selectedOrder;  // Orden seleccionada por el usuario
+const targetMostro = order.pubkey;  // Extraer pubkey del evento
+
+await sendMostroCommand(
+  'TakeBuy',
+  { order_id: order.id },
+  targetMostro  // Mostro específico que publicó esta orden
+);
 ```
 
 ### 10.2 Escuchar Respuestas de Mostro
@@ -832,28 +864,36 @@ async function listenForMostroMessages() {
       // 3. Parsear mensaje
       const message = JSON.parse(content);
 
-      // 4. Validar trade_index
+      // 4. Identificar de qué Mostro viene el mensaje
+      // (Opcional: validar contra lista de Mostros conocidos)
+      const mostroPubkey = event.pubkey;
+
+      // 5. Validar trade_index
       if (message.trade_index <= lastTradeIndex) {
         throw new Error('Invalid trade_index');
       }
 
-      // 5. Actualizar trade_index
+      // 6. Actualizar trade_index
       updateTradeIndex(message.trade_index);
 
-      // 6. Procesar mensaje
-      await handleMostroMessage(message);
+      // 7. Procesar mensaje con contexto del Mostro
+      await handleMostroMessage(message, mostroPubkey);
 
     } catch (error) {
       logger.error('Error procesando mensaje de Mostro:', error);
     }
   });
 }
+
+// IMPORTANTE: Usuario puede estar interactuando con MÚLTIPLES Mostros
+// simultáneamente. Identificar el origen de cada mensaje por su pubkey.
 ```
 
 ### 10.3 Parsear Órdenes Públicas (NIP-33)
 
 ```javascript
 async function fetchPublicOrders() {
+  // Descubrir órdenes de TODOS los Mostros en los relays
   const events = await pool.list(DEFAULT_RELAYS, [
     {
       kinds: [34242],
@@ -876,9 +916,36 @@ async function fetchPublicOrders() {
       status: tags.s,
       premium: parseFloat(tags.premium || 0),
       created_at: event.created_at,
-      creator: event.pubkey
+
+      // CRÍTICO: Guardar pubkey del Mostro que publicó esta orden
+      mostro_pubkey: event.pubkey,  // Necesario para interactuar después
+
+      // Opcional: Pubkey del creador de la orden (puede ser diferente)
+      creator: tags.creator || event.pubkey
     };
   });
+}
+
+// Agrupar órdenes por Mostro (útil para UI)
+function groupOrdersByMostro(orders) {
+  const grouped = {};
+
+  orders.forEach(order => {
+    const mostro = order.mostro_pubkey;
+    if (!grouped[mostro]) {
+      grouped[mostro] = [];
+    }
+    grouped[mostro].push(order);
+  });
+
+  return grouped;
+}
+
+// Cuando usuario selecciona una orden
+function selectOrder(order) {
+  // Guardar el Mostro target para futuros comandos
+  state.currentMostro = order.mostro_pubkey;
+  state.currentOrder = order;
 }
 ```
 
@@ -930,8 +997,17 @@ Usa testnet. Configura `environment: 'testnet'` y conecta a relays de testing.
 ### ¿Qué hago si el usuario pierde su sesión?
 Implementa el comando `/restore` que envía `RestoreSession` action a Mostro para recuperar estado.
 
-### ¿Cómo sé si un mensaje es de Mostro?
-Verifica la firma del evento con `verifyEvent()` y compara `event.pubkey` con `MOSTRO_PUBKEY`.
+### ¿Hay una public key fija de Mostro?
+**NO.** Mostro es un protocolo descentralizado. Cada Mostro daemon tiene su propia pubkey. Extrae la pubkey dinámicamente del evento de orden (`event.pubkey`).
+
+### ¿Cómo descubro qué Mostros existen?
+Busca eventos Kind 34242 en relays públicos. El `pubkey` de cada evento identifica un Mostro daemon. No hay registro central.
+
+### ¿Puedo interactuar con múltiples Mostros a la vez?
+**SÍ.** Un usuario puede tener órdenes activas con varios Mostros simultáneamente. Guarda el `mostro_pubkey` por cada orden.
+
+### ¿Cómo sé si un mensaje es de un Mostro legítimo?
+Verifica la firma del evento con `verifyEvent()` y compara `event.pubkey` con el pubkey de la orden que estás procesando. Opcionalmente, implementa whitelist/blacklist de Mostros conocidos.
 
 ### ¿Qué es trade_index y por qué es importante?
 Es un contador incrementante que previene replay attacks. SIEMPRE valida que sea mayor al último conocido.
@@ -941,6 +1017,9 @@ Es un contador incrementante que previene replay attacks. SIEMPRE valida que sea
 
 ### ¿Cómo implemento el estilo retro terminal?
 CSS con colores neón sobre fondo negro, fuente monospace, y opcionalmente efectos scanline y cursor parpadeante.
+
+### ¿Qué pasa si un Mostro daemon se desconecta?
+Las órdenes de ese Mostro dejarán de actualizarse, pero otros Mostros siguen funcionando. Esto es una ventaja de la descentralización: no hay single point of failure.
 
 ---
 

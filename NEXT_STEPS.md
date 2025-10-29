@@ -3,9 +3,16 @@
 ## Estado Actual
 ✅ **COMPLETADO:**
 - Análisis completo de repositorios (mostro, bot, nostr)
-- Documentación de arquitectura (READMEv1.md)
-- Guía para IA agents (AI_AGENTS.md)
+- Documentación de arquitectura (READMEv1.md) - **Actualizada para modelo descentralizado**
+- Guía para IA agents (AI_AGENTS.md) - **Actualizada para modelo descentralizado**
 - Repositorio configurado y sincronizado
+
+🎯 **DESCUBRIMIENTO CRÍTICO:**
+- Mostro es un **protocolo descentralizado**, NO un servicio centralizado
+- Múltiples Mostro daemons ejecutándose independientemente
+- Cada Mostro tiene su propia public key (NO hay pubkey fija global)
+- Órdenes son eventos públicos descubribles (Kind 34242)
+- MostroWeb descubre órdenes dinámicamente buscando en relays
 
 ## Próximos Pasos Críticos
 
@@ -13,11 +20,11 @@
 
 #### 1. Resolver Decisiones Pendientes
 **Archivo:** `TECHNICAL_QUESTIONS.md`
-- [ ] Obtener public key oficial de Mostro
-- [ ] Confirmar relays recomendados  
-- [ ] Validar NIP-44 vs NIP-04 para encriptación
-- [ ] Configurar entorno de testnet
+- [ ] Confirmar relays Nostr recomendados para descubrimiento de órdenes
+- [ ] Validar NIP-44 vs NIP-04 para encriptación de GiftWraps
+- [ ] Configurar entorno de testnet con Mostro daemon de prueba
 - [ ] Establecer timeout de órdenes
+- [ ] Definir criterios para identificar Mostros confiables (whitelist/reputación)
 
 #### 2. Setup del Proyecto
 **Archivo:** `package.json` y estructura inicial
@@ -37,32 +44,45 @@
 
 #### 4. Conexión Nostr Básica
 **Módulo:** `js/core/relayManager.js`
-- [ ] Conexión a múltiples relays
+- [ ] Conexión a múltiples relays públicos
 - [ ] Monitoreo de estado de conexiones
 - [ ] Auto-reconexión
-- [ ] Configuración de relays
+- [ ] Configuración de relays dinámica (usuario puede añadir)
 
-#### 5. UI Terminal Básica
+#### 5. Descubrimiento de Órdenes (CRÍTICO)
+**Módulo:** `js/mostro/discovery.js`
+- [ ] Buscar eventos Kind 34242 en relays (órdenes públicas)
+- [ ] Filtrar por tags (#y=mostrop2p, #z=order)
+- [ ] Extraer pubkey de Mostro de cada evento
+- [ ] Cachear lista de Mostros descubiertos
+- [ ] Agrupar órdenes por Mostro daemon
+
+#### 6. UI Terminal Básica
 **Módulo:** `js/ui/terminal.js`
 - [ ] Interfaz terminal retro (verde/ámbar)
 - [ ] Prompt de comandos
 - [ ] Sistema de output
 - [ ] Historial de comandos
+- [ ] Display de órdenes agrupadas por Mostro
 
 ### FASE 3: SPRINT 2 - PROTOCOLO MOSTRO (Semanas 4-5)
 
-#### 6. Comunicación con Mostro
+#### 7. Comunicación con Mostro
 **Módulo:** `js/mostro/protocol.js`
 - [ ] Estructura de mensajes Mostro
-- [ ] NIP-59 GiftWrap implementation
-- [ ] Trade index tracking
+- [ ] NIP-59 GiftWrap implementation (dirigido a Mostro específico)
+- [ ] Trade index tracking (por Mostro instance)
 - [ ] Comandos TradePubkey y RestoreSession
+- [ ] Gestión de múltiples Mostros simultáneos
+- [ ] Validación de respuestas por pubkey del Mostro
 
 ### Prioridades Inmediatas (Esta Semana)
 
 1. **CREAR** `TECHNICAL_QUESTIONS.md` para validar con equipo Mostro
 2. **INICIAR** estructura básica del proyecto (HTML/CSS/JS)
 3. **IMPLEMENTAR** keyManager.js (gestión de claves local)
+4. **PROTOTIPAR** descubrimiento de órdenes (buscar Kind 34242 en relays)
+5. **VALIDAR** extracción dinámica de pubkey de Mostros
 
 ## Decisiones Técnicas Inmediatas
 
@@ -80,9 +100,12 @@
 
 ## Métricas de Éxito Sprint 1
 - [ ] Usuario puede generar/importar private key
-- [ ] Conexión estable a 3+ relays Nostr
-- [ ] Interfaz terminal funcional
+- [ ] Conexión estable a 3+ relays Nostr públicos
+- [ ] Descubrimiento de órdenes públicas (Kind 34242) funcionando
+- [ ] Extracción correcta de pubkey de Mostro de cada orden
+- [ ] Interfaz terminal funcional con listado de órdenes
 - [ ] Private key almacenada de forma segura
+- [ ] Display de órdenes agrupadas por Mostro instance
 
 ## Acciones Requeridas
 
