@@ -358,7 +358,7 @@
 .highlight {
   color: var(--text-primary);
   font-weight: bold;
-  text-shadow: 0 0 5px var(--glow-color);
+  text-shadow: 0 0 3px var(--glow-color);
 }
 
 .highlight-success {

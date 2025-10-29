@@ -10,18 +10,18 @@
   /* Colores */
   --bg-primary: #000000;
   --bg-secondary: #001100;
-  --text-primary: #00ff00;
-  --text-secondary: #00aa00;
-  --text-dim: #006600;
-  --text-error: #ff0000;
-  --text-warning: #ffaa00;
-  --text-info: #00aaff;
-  --text-success: #00ff00;
-  --cursor-color: #00ff00;
+  --text-primary: #00e676;
+  --text-secondary: #00c853;
+  --text-dim: #00a040;
+  --text-error: #ff5252;
+  --text-warning: #ffb74d;
+  --text-info: #29b6f6;
+  --text-success: #00e676;
+  --cursor-color: #00e676;
   --selection-bg: #003300;
-  --selection-text: #00ff00;
+  --selection-text: #00e676;
   --border-color: #004400;
-  --glow-color: rgba(0, 255, 0, 0.3);
+  --glow-color: rgba(0, 230, 118, 0.2);
   --scanline-color: rgba(0, 0, 0, 0.05);
 
   /* Tipografía */
@@ -122,7 +122,7 @@ body {
   gap: var(--spacing-sm);
   color: var(--text-primary);
   font-weight: bold;
-  text-shadow: 0 0 5px var(--glow-color);
+  text-shadow: 0 0 3px var(--glow-color);
 }
 
 .title-icon {
@@ -182,7 +182,7 @@ body {
   white-space: pre-wrap;
   word-wrap: break-word;
   position: relative;
-  text-shadow: 0 0 5px var(--glow-color);
+  text-shadow: 0 0 2px var(--glow-color);
 }
 
 /* Scrollbar personalizado */
@@ -221,7 +221,7 @@ body {
   color: var(--text-primary);
   font-weight: bold;
   margin-right: var(--spacing-sm);
-  text-shadow: 0 0 5px var(--glow-color);
+  text-shadow: 0 0 3px var(--glow-color);
   user-select: none;
 }
 
@@ -234,7 +234,7 @@ body {
   font-family: var(--font-mono);
   font-size: var(--font-size);
   caret-color: transparent;
-  text-shadow: 0 0 5px var(--glow-color);
+  text-shadow: 0 0 2px var(--glow-color);
 }
 
 .cursor {

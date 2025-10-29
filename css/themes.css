@@ -90,15 +90,15 @@ body.theme-purple {
 body.theme-matrix {
   --bg-primary: #000000;
   --bg-secondary: #001100;
-  --text-primary: #00ff41;
-  --text-secondary: #00dd33;
-  --text-dim: #008822;
-  --text-success: #00ff41;
-  --cursor-color: #00ff41;
+  --text-primary: #00e676;
+  --text-secondary: #00c853;
+  --text-dim: #00a040;
+  --text-success: #00e676;
+  --cursor-color: #00e676;
   --selection-bg: #003311;
-  --selection-text: #00ff41;
+  --selection-text: #00e676;
   --border-color: #004411;
-  --glow-color: rgba(0, 255, 65, 0.4);
+  --glow-color: rgba(0, 230, 118, 0.25);
 }
 
 /* Efecto adicional Matrix */
@@ -134,15 +134,15 @@ body.theme-dos {
 body.theme-hacker {
   --bg-primary: #000000;
   --bg-secondary: #0a0a0a;
-  --text-primary: #33ff33;
-  --text-secondary: #22cc22;
-  --text-dim: #116611;
-  --text-success: #33ff33;
-  --cursor-color: #33ff33;
+  --text-primary: #00e676;
+  --text-secondary: #00c853;
+  --text-dim: #00a040;
+  --text-success: #00e676;
+  --cursor-color: #00e676;
   --selection-bg: #002200;
-  --selection-text: #33ff33;
+  --selection-text: #00e676;
   --border-color: #003300;
-  --glow-color: rgba(51, 255, 51, 0.4);
+  --glow-color: rgba(0, 230, 118, 0.25);
 }
 
 /* Efecto glitch para tema hacker */
