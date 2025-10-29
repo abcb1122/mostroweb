@@ -11,7 +11,6 @@
 
 Actualmente, los usuarios deben interactuar con Mostro mediante:
 - Terminal/línea de comandos
-- Bots de Telegram (como lnp2pbot)
 - Clientes Nostr que soporten el protocolo personalizado de Mostro
 
 ### 1.2 Objetivo de MostroWeb
