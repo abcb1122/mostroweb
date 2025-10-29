@@ -222,7 +222,7 @@ export function showHelp() {
 /**
  * Muestra información de versión
  */
-export function showVersion() {
+export async function showVersion() {
   const { APP_VERSION, APP_NAME, ENVIRONMENT } = await import('../utils/constants.js');
 
   addHTML(`
@@ -242,9 +242,9 @@ export function showVersion() {
 /**
  * Muestra estado del sistema
  */
-export function showStatus() {
+export async function showStatus() {
   const storage = await import('../core/storage.js').then(m => m.default);
-  const info = storage.getInfo();
+  const info = await storage.getInfo();
 
   addHTML(`
     <div class="box">

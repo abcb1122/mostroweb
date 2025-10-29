@@ -135,7 +135,7 @@ function handleClear() {
 /**
  * Comando: /theme
  */
-function handleTheme(args) {
+async function handleTheme(args) {
   if (args.length === 0) {
     // Mostrar temas disponibles
     Display.info('Available themes:');
@@ -226,7 +226,7 @@ export function getAutocompleteSuggestions(input) {
 /**
  * Valida si un input es un comando válido
  */
-export function isValidCommand(input) {
+export async function isValidCommand(input) {
   const parsed = parseCommand(input);
   if (!parsed) return false;
 
@@ -237,7 +237,7 @@ export function isValidCommand(input) {
 /**
  * Obtiene información de un comando
  */
-export function getCommandInfo(command) {
+export async function getCommandInfo(command) {
   const { COMMAND_INFO } = await import('../utils/constants.js');
   return COMMAND_INFO[command] || null;
 }
@@ -245,7 +245,7 @@ export function getCommandInfo(command) {
 /**
  * Inicializa el módulo de comandos
  */
-export function initCommands() {
+export async function initCommands() {
   Logger.debug('Commands: Initialized');
 
   // Restaurar tema guardado
