@@ -31,13 +31,25 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Prepare deployment directory
+        run: |
+          mkdir -p _site
+          cp index.html _site/
+          cp -r css _site/
+          cp -r js _site/
+          cp .nojekyll _site/
+          echo "Files to deploy:"
+          ls -la _site/
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository
-          path: '.'
+          path: '_site'
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
