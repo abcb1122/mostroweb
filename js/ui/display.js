@@ -140,18 +140,17 @@ export function scrollToBottom() {
 export function showWelcome() {
   addHTML(`
     <div class="welcome-banner">
-      <pre class="ascii-art">${ASCII_LOGO}</pre>
-      <div class="subtitle">Decentralized P2P Bitcoin Trading via Nostr</div>
+      <div class="subtitle">Welcome to Mostro user web interface</div>
+      <div class="subtitle">Please select a method to start</div>
       <div class="separator"></div>
       <div class="info">
-        • Type <strong>/help</strong> to see available commands
-        • Type <strong>/theme &lt;color&gt;</strong> to change theme (green, amber, blue, matrix, etc)
-        • Type <strong>/version</strong> for version info
+        • New user: <strong>/start</strong>
+      </div>
+      <div class="info">
+        • User login: <strong>/login</strong>
       </div>
     </div>
   `);
-  blank();
-  info('Terminal ready. Type /help for available commands.');
   blank();
 }
 
