@@ -150,7 +150,11 @@ export const ERROR_MESSAGES = {
   DECRYPTION_FAILED: 'Decryption failed. Wrong password or corrupted data.',
   NO_IDENTITY_FOUND: 'No identity found. Use /start to create one.',
   IDENTITY_ALREADY_EXISTS: 'Identity already exists. Use /start to unlock or /import to replace.',
-  EXPORT_REQUIRES_UNLOCK: 'You must unlock your session first. Use /start.'
+  EXPORT_REQUIRES_UNLOCK: 'You must unlock your session first. Use /start.',
+  RELAY_NOT_CONNECTED: 'Not connected to any relay. Use /discover first.',
+  NO_ORDERS_FOUND: 'No orders found. Try /discover to scan for orders.',
+  DISCOVERY_ALREADY_RUNNING: 'Discovery is already running.',
+  RELAY_CONNECTION_TIMEOUT: 'Relay connection timeout. Check your internet connection.'
 };
 
 // Mensajes de éxito
@@ -164,7 +168,12 @@ export const SUCCESS_MESSAGES = {
   SESSION_LOCKED: 'Session locked. Keys cleared from memory.',
   PASSWORD_CHANGED: 'Password changed successfully',
   KEY_ENCRYPTED: 'Private key encrypted and stored securely',
-  IDENTITY_CREATED: 'Identity created successfully'
+  IDENTITY_CREATED: 'Identity created successfully',
+  RELAY_CONNECTED_SUCCESS: 'Successfully connected to relays',
+  DISCOVERY_STARTED: 'Order discovery started. Scanning relays...',
+  ORDERS_REFRESHED: 'Orders refreshed successfully',
+  RELAY_ADDED: 'Relay added successfully',
+  RELAY_REMOVED: 'Relay removed successfully'
 };
 
 // Regex patterns
@@ -193,6 +202,11 @@ export const COMMANDS = {
   IDENTITY: '/identity',
   LOCK: '/lock',
   CHANGEPASS: '/changepass',
+
+  // Fase 2 - Relay & Discovery
+  RELAYS: '/relays',
+  DISCOVER: '/discover',
+  REFRESH: '/refresh',
 
   // Fase 2+ (placeholder)
   RESTORE: '/restore',
@@ -266,6 +280,30 @@ export const COMMAND_INFO = {
     usage: '/changepass',
     aliases: ['passwd'],
     examples: ['/changepass']
+  },
+  [COMMANDS.RELAYS]: {
+    description: 'Show relay connection status',
+    usage: '/relays',
+    aliases: ['relay'],
+    examples: ['/relays']
+  },
+  [COMMANDS.DISCOVER]: {
+    description: 'Start discovering orders from relays',
+    usage: '/discover',
+    aliases: ['scan'],
+    examples: ['/discover']
+  },
+  [COMMANDS.REFRESH]: {
+    description: 'Refresh orders from relays',
+    usage: '/refresh',
+    aliases: ['reload'],
+    examples: ['/refresh']
+  },
+  [COMMANDS.LISTORDERS]: {
+    description: 'List all discovered orders grouped by Mostro',
+    usage: '/listorders [buy|sell] [fiatCode]',
+    aliases: ['orders', 'list'],
+    examples: ['/listorders', '/listorders buy', '/listorders sell USD']
   }
 };
 

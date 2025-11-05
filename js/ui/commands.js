@@ -8,6 +8,8 @@ import { isValidTheme, parseCommandArgs } from '../utils/helpers.js';
 import Logger from '../utils/logger.js';
 import Display from './display.js';
 import KeyManager from '../core/keyManager.js';
+import RelayManager from '../core/relayManager.js';
+import Discovery from '../mostro/discovery.js';
 import {
   promptPassword,
   promptPasswordConfirm,
@@ -123,16 +125,37 @@ export async function executeCommand(input) {
         await handleChangePassword(args);
         break;
 
-      // Comandos no implementados aún (Fase 2+)
+      // Relay & Discovery Commands
+      case COMMANDS.RELAYS:
+      case '/relay':
+        await handleRelays(args);
+        break;
+
+      case COMMANDS.DISCOVER:
+      case '/scan':
+        await handleDiscover(args);
+        break;
+
+      case COMMANDS.REFRESH:
+      case '/reload':
+        await handleRefresh(args);
+        break;
+
+      case COMMANDS.LISTORDERS:
+      case '/orders':
+      case '/list':
+        await handleListOrders(args);
+        break;
+
+      // Comandos no implementados aún (Fase 3+)
       case COMMANDS.RESTORE:
       case COMMANDS.NEWSELL:
       case COMMANDS.NEWBUY:
-      case COMMANDS.LISTORDERS:
       case COMMANDS.CANCEL:
       case COMMANDS.TAKEBUY:
       case COMMANDS.TAKESELL:
         Display.warning(`${command} - ${ERROR_MESSAGES.COMMAND_NOT_IMPLEMENTED}`);
-        Display.info('This command will be available in Phase 2');
+        Display.info('This command will be available in Phase 3');
         break;
 
       default:
@@ -609,6 +632,282 @@ export async function isValidCommand(input) {
 export async function getCommandInfo(command) {
   const { COMMAND_INFO } = await import('../utils/constants.js');
   return COMMAND_INFO[command] || null;
+}
+
+/**
+ * Comando: /relays
+ * Muestra estado de conexiones a relays
+ */
+async function handleRelays(args) {
+  try {
+    const state = RelayManager.getState();
+
+    Display.info('=== RELAY STATUS ===');
+    Display.blank();
+    Display.addLine(`Connected: ${state.connectedCount}/${state.relayCount}`, 'info');
+    Display.addLine(`Subscriptions: ${state.subscriptionCount}`, 'dim');
+    Display.blank();
+
+    if (state.relays.length === 0) {
+      Display.warning('No relays configured');
+      return;
+    }
+
+    state.relays.forEach(relay => {
+      const statusIcon = relay.status === 'connected' ? '🟢' :
+                         relay.status === 'connecting' ? '🟡' : '🔴';
+      const statusText = relay.status.toUpperCase();
+
+      Display.addLine(`${statusIcon} ${relay.url}`, 'normal');
+      Display.addLine(`   Status: ${statusText}`, 'dim');
+
+      if (relay.lastConnected) {
+        const ago = Math.floor((Date.now() - relay.lastConnected) / 1000);
+        Display.addLine(`   Last connected: ${ago}s ago`, 'dim');
+      }
+
+      if (relay.lastError) {
+        Display.addLine(`   Error: ${relay.lastError}`, 'error');
+      }
+
+      Display.blank();
+    });
+
+    Display.dim('Stats:');
+    Display.dim(`  Events received: ${state.stats.eventsReceived}`);
+    Display.dim(`  Events published: ${state.stats.eventsPublished}`);
+    Display.dim(`  Errors: ${state.stats.errors}`);
+
+  } catch (error) {
+    Logger.error('Relays command error:', error);
+    Display.error(`Failed to show relays: ${error.message}`);
+  }
+}
+
+/**
+ * Comando: /discover
+ * Inicia descubrimiento de órdenes
+ */
+async function handleDiscover(args) {
+  try {
+    if (Discovery.isActive()) {
+      Display.warning(ERROR_MESSAGES.DISCOVERY_ALREADY_RUNNING);
+      Display.info('Use /refresh to update orders or /listorders to view them.');
+      return;
+    }
+
+    Display.info('Starting order discovery...');
+    Display.blank();
+
+    // Conectar a relays si no está conectado
+    if (!RelayManager.isConnected()) {
+      Display.info('Connecting to relays...');
+
+      try {
+        const result = await RelayManager.connect();
+        Display.success(`Connected to ${result.connected}/${result.total} relays`);
+
+        if (result.failed > 0) {
+          Display.warning(`Failed to connect to ${result.failed} relays`);
+        }
+
+        Display.blank();
+      } catch (error) {
+        Display.error(`Failed to connect to relays: ${error.message}`);
+        Display.dim('Check your internet connection and try again.');
+        return;
+      }
+    } else {
+      const connectedCount = RelayManager.getConnectedCount();
+      Display.info(`Already connected to ${connectedCount} relays`);
+      Display.blank();
+    }
+
+    // Iniciar discovery
+    Display.info('Scanning relays for Mostro orders...');
+
+    await Discovery.startDiscovery();
+
+    Display.success(SUCCESS_MESSAGES.DISCOVERY_STARTED);
+    Display.blank();
+    Display.dim('Listening for order events...');
+    Display.dim('Orders will appear as they are discovered.');
+    Display.blank();
+    Display.info('Use /listorders to view discovered orders');
+    Display.dim('Use /refresh to rescan relays');
+
+  } catch (error) {
+    Logger.error('Discover command error:', error);
+    Display.error(`Failed to start discovery: ${error.message}`);
+  }
+}
+
+/**
+ * Comando: /refresh
+ * Refresca órdenes desde relays
+ */
+async function handleRefresh(args) {
+  try {
+    if (!Discovery.isActive()) {
+      Display.warning('Discovery not running. Use /discover to start.');
+      return;
+    }
+
+    Display.info('Refreshing orders from relays...');
+    Display.blank();
+
+    const oldStats = Discovery.getStats();
+
+    await Discovery.refreshOrders();
+
+    // Esperar un momento para que lleguen algunos eventos
+    Display.dim('Scanning relays...');
+
+    // Dar tiempo para recibir eventos iniciales (2 segundos)
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    const newStats = Discovery.getStats();
+
+    Display.blank();
+    Display.success(SUCCESS_MESSAGES.ORDERS_REFRESHED);
+    Display.blank();
+    Display.info(`Found ${newStats.total} orders from ${newStats.mostroCount} Mostro instances`);
+    Display.dim(`  Buy orders: ${newStats.buyOrders}`);
+    Display.dim(`  Sell orders: ${newStats.sellOrders}`);
+    Display.blank();
+    Display.info('Use /listorders to view orders');
+
+  } catch (error) {
+    Logger.error('Refresh command error:', error);
+    Display.error(`Failed to refresh orders: ${error.message}`);
+  }
+}
+
+/**
+ * Comando: /listorders
+ * Lista órdenes descubiertas agrupadas por Mostro
+ */
+async function handleListOrders(args) {
+  try {
+    // Verificar que discovery esté activo o haya órdenes cacheadas
+    if (!Discovery.isActive() && Discovery.getOrderCount() === 0) {
+      Display.warning('No orders available.');
+      Display.info('Use /discover to start scanning for orders.');
+      return;
+    }
+
+    // Parsear filtros de argumentos
+    const filters = {};
+
+    // Primer argumento puede ser tipo (buy/sell) o fiatCode
+    if (args.length > 0) {
+      const firstArg = args[0].toLowerCase();
+
+      if (firstArg === 'buy' || firstArg === 'sell') {
+        filters.type = firstArg;
+      } else {
+        // Asumir que es fiatCode
+        filters.fiatCode = args[0].toUpperCase();
+      }
+    }
+
+    // Segundo argumento puede ser fiatCode
+    if (args.length > 1) {
+      filters.fiatCode = args[1].toUpperCase();
+    }
+
+    // Solo órdenes completas y no expiradas
+    filters.onlyComplete = true;
+    filters.excludeExpired = true;
+
+    // Obtener órdenes
+    const orders = Discovery.getOrders(filters);
+
+    if (orders.length === 0) {
+      Display.warning(ERROR_MESSAGES.NO_ORDERS_FOUND);
+
+      if (Object.keys(filters).length > 2) {
+        Display.dim('Try removing filters or use /refresh to update orders.');
+      } else {
+        Display.dim('Use /discover to start scanning or /refresh to update.');
+      }
+
+      return;
+    }
+
+    // Agrupar por Mostro
+    const groupedOrders = {};
+    orders.forEach(order => {
+      if (!groupedOrders[order.mostroPubkey]) {
+        groupedOrders[order.mostroPubkey] = [];
+      }
+      groupedOrders[order.mostroPubkey].push(order);
+    });
+
+    const mostroCount = Object.keys(groupedOrders).length;
+
+    // Header
+    Display.info('=== MOSTRO ORDERS ===');
+    Display.blank();
+
+    let filterText = 'All orders';
+    if (filters.type) {
+      filterText = `${filters.type.toUpperCase()} orders`;
+    }
+    if (filters.fiatCode) {
+      filterText += ` in ${filters.fiatCode}`;
+    }
+
+    Display.addLine(`${filterText}: ${orders.length} orders from ${mostroCount} Mostro instances`, 'info');
+    Display.blank();
+
+    // Mostrar órdenes agrupadas por Mostro
+    let displayedOrders = 0;
+    const maxOrdersPerMostro = 10;
+    const maxMostros = 5;
+
+    Object.entries(groupedOrders).slice(0, maxMostros).forEach(([mostroPubkey, mostroOrders]) => {
+      const mostro = Discovery.getMostro(mostroPubkey);
+
+      if (!mostro) return;
+
+      Display.addLine(`${mostro.toDisplayString()}`, 'info');
+      Display.blank();
+
+      mostroOrders.slice(0, maxOrdersPerMostro).forEach(order => {
+        Display.addLine(`  ${order.toDisplayString()}`, 'normal');
+      });
+
+      if (mostroOrders.length > maxOrdersPerMostro) {
+        Display.dim(`  ... and ${mostroOrders.length - maxOrdersPerMostro} more orders`);
+      }
+
+      Display.blank();
+      displayedOrders += Math.min(mostroOrders.length, maxOrdersPerMostro);
+    });
+
+    if (mostroCount > maxMostros) {
+      Display.dim(`... and ${mostroCount - maxMostros} more Mostro instances`);
+      Display.blank();
+    }
+
+    // Footer
+    Display.dim('Legend: 📗 = BUY | 📕 = SELL | 🟢 = Active Mostro');
+    Display.blank();
+    Display.info('To take an order, use:');
+    Display.dim('  /takebuy <order-id>  - Take a buy order');
+    Display.dim('  /takesell <order-id> - Take a sell order');
+
+    if (!Discovery.isActive()) {
+      Display.blank();
+      Display.warning('⚠️  Discovery not running. Orders may be outdated.');
+      Display.dim('Use /discover to start real-time discovery.');
+    }
+
+  } catch (error) {
+    Logger.error('ListOrders command error:', error);
+    Display.error(`Failed to list orders: ${error.message}`);
+  }
 }
 
 /**

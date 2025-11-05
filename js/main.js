@@ -7,6 +7,8 @@ import { APP_NAME, APP_VERSION, ENVIRONMENT } from './utils/constants.js';
 import Logger from './utils/logger.js';
 import Terminal from './ui/terminal.js';
 import KeyManager from './core/keyManager.js';
+import RelayManager from './core/relayManager.js';
+import Discovery from './mostro/discovery.js';
 
 /**
  * Estado global de la aplicación
@@ -54,6 +56,16 @@ async function init() {
     Logger.debug('Main: Initializing KeyManager...');
     await KeyManager.init();
     Logger.info('Main: KeyManager initialized successfully');
+
+    // Inicializar RelayManager
+    Logger.debug('Main: Initializing RelayManager...');
+    await RelayManager.init();
+    Logger.info('Main: RelayManager initialized successfully');
+
+    // Inicializar Discovery
+    Logger.debug('Main: Initializing Discovery...');
+    await Discovery.init();
+    Logger.info('Main: Discovery initialized successfully');
 
     // Marcar como inicializado
     app.initialized = true;
@@ -149,6 +161,8 @@ window.MostroWeb = {
   Logger,
   Terminal,
   KeyManager,
+  RelayManager,
+  Discovery,
 
   // Métodos útiles para debugging
   getState() {
@@ -156,6 +170,8 @@ window.MostroWeb = {
       initialized: app.initialized,
       terminal: Terminal.getState(),
       keyManager: KeyManager.getState(),
+      relayManager: RelayManager.getState(),
+      discovery: Discovery.getState(),
       environment: ENVIRONMENT
     };
   },
@@ -166,7 +182,10 @@ window.MostroWeb = {
       Version: APP_VERSION,
       Environment: ENVIRONMENT.isDevelopment ? 'Development' : 'Production',
       Initialized: app.initialized,
-      Uptime: `${((Date.now() - app.startTime) / 1000).toFixed(2)}s`
+      Uptime: `${((Date.now() - app.startTime) / 1000).toFixed(2)}s`,
+      Relays: `${RelayManager.getConnectedCount()}/${RelayManager.getRelayCount()}`,
+      Orders: Discovery.getOrderCount(),
+      Mostros: Discovery.getMostroCount()
     });
   }
 };
