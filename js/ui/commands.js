@@ -327,21 +327,11 @@ async function handleStart(args) {
     Display.blank();
     Display.addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'dim');
     Display.blank();
-    Display.addHTML(`
-      <div class="key-container">
-        <label class="key-label">CLAVE PÚBLICA (npub):</label>
-        <div class="key-field">
-          <input type="text" value="${npub}" readonly class="key-input" id="public-key-${Date.now()}">
-          <button class="copy-btn" onclick="copyToClipboard('public-key-${Date.now()}')">Copiar</button>
-        </div>
-      </div>
-    `);
+    Display.info('CLAVE PÚBLICA (npub):');
+    Display.addLine(`  ${npub}`, 'success');
     Display.blank();
-    Display.addHTML(`
-      <div class="key-container">
-        <label class="key-label">CLAVE PRIVADA (nsec) - GUÁRDALA:</label>
-        <div class="key-field">
-          <input type="password" value="${nsec}" readonly class="key-input" id="private-key-${Date.now()}">
+    Display.info('CLAVE PRIVADA (nsec) - GUÁRDALA:');
+    Display.addLine(`  ${nsec}`, 'warning');
           <button class="copy-btn" onclick="copyToClipboard('private-key-${Date.now()}')">Copiar</button>
         </div>
       </div>
