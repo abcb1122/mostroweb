@@ -139,15 +139,27 @@ export function scrollToBottom() {
  */
 export function showWelcome() {
   blank();
+
+  // ASCII grande (Desktop y Tablet)
+  addHTML('<div class="ascii-art ascii-art-large">');
   addLine('  ███╗   ███╗ ██████╗ ███████╗████████╗██████╗  ██████╗ ', 'success');
   addLine('  ████╗ ████║██╔═══██╗██╔════╝╚══██╔══╝██╔══██╗██╔═══██╗', 'success');
   addLine('  ██╔████╔██║██║   ██║███████╗   ██║   ██████╔╝██║   ██║', 'success');
   addLine('  ██║╚██╔╝██║██║   ██║╚════██║   ██║   ██╔══██╗██║   ██║', 'success');
   addLine('  ██║ ╚═╝ ██║╚██████╔╝███████║   ██║   ██║  ██║╚██████╔╝', 'success');
   addLine('  ╚═╝     ╚═╝ ╚═════╝ ╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ', 'success');
+  addHTML('</div>');
+
+  // Logo simple (Móviles)
+  addHTML(`
+    <div class="ascii-art-mobile">
+      <div style="font-size: 24px; font-weight: bold; color: var(--text-success);">MOSTRO</div>
+      <div style="font-size: 14px; color: var(--text-secondary); margin-top: 4px;">P2P Bitcoin Trading</div>
+    </div>
+  `);
+
   blank();
   addLine('          TERMINAL DE TRADING P2P DE BITCOIN', 'info');
-  blank();
   blank();
   addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'dim');
   addLine('  COMENZAR:', 'info');

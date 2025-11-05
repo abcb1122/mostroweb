@@ -29,15 +29,16 @@
   --font-size: 18px;           /* Aumentado de 14px a 18px */
   --font-size-large: 22px;     /* Nueva: para títulos */
   --font-size-small: 16px;     /* Nueva: para texto secundario */
-  --line-height: 1.6;
+  --line-height: 1.4;          /* Reducido de 1.6 para modo chat */
+  --line-height-compact: 1.3;  /* Nuevo: para mensajes tipo chat */
   --letter-spacing: 0.5px;
 
-  /* Espaciado */
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 16px;
-  --spacing-lg: 24px;
-  --spacing-xl: 32px;
+  /* Espaciado - MÁS COMPACTO para modo chat */
+  --spacing-xs: 2px;           /* Reducido de 4px */
+  --spacing-sm: 6px;           /* Reducido de 8px */
+  --spacing-md: 12px;          /* Reducido de 16px */
+  --spacing-lg: 20px;          /* Reducido de 24px */
+  --spacing-xl: 28px;          /* Reducido de 32px */
 
   /* Animaciones */
   --transition-fast: 0.15s ease;
@@ -341,7 +342,7 @@ body {
 }
 
 /* ============================================
-   RESPONSIVE
+   RESPONSIVE - MEJORADO PARA MÓVILES
    ============================================ */
 @media (max-width: 768px) {
   .terminal-container {
@@ -350,8 +351,11 @@ body {
   }
 
   :root {
-    --font-size: 16px;           /* Tablet: mantener legible */
+    --font-size: 16px;            /* Tablet: mantener legible */
     --font-size-large: 20px;
+    --line-height: 1.35;          /* Más compacto que desktop */
+    --spacing-xs: 2px;
+    --spacing-sm: 6px;
   }
 
   .terminal-header,
@@ -375,11 +379,51 @@ body {
     max-width: none;
     max-height: none;
     border: none;
+    box-shadow: none;             /* Remover efectos */
+  }
+
+  /* Remover scanlines animadas en móvil (performance) */
+  .terminal-container::before {
+    display: none;
   }
 
   :root {
-    --font-size: 14px;           /* Móviles: mínimo legible */
-    --font-size-large: 18px;
+    --font-size: 16px;            /* AUMENTADO de 14px - mejor legibilidad */
+    --font-size-large: 20px;      /* AUMENTADO de 18px */
+    --line-height: 1.3;           /* MÁS COMPACTO - modo chat */
+    --line-height-compact: 1.25;  /* Extra compacto para móvil */
+    --spacing-xs: 2px;
+    --spacing-sm: 4px;
+    --spacing-md: 8px;
+  }
+
+  /* Header compacto */
+  .terminal-header {
+    height: 36px;
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+
+  /* Input touch-friendly */
+  .terminal-input-line {
+    height: 44px;                 /* Altura recomendada para touch */
+  }
+
+  /* Output sin efectos visuales (mejor performance) */
+  .terminal-output {
+    padding: var(--spacing-sm);
+    text-shadow: none;            /* Remover glow effect */
+  }
+
+  /* Remover glow de elementos individuales */
+  .terminal-title,
+  .prompt,
+  .terminal-input {
+    text-shadow: none;
+  }
+
+  /* Controles más simples */
+  .btn-control:hover {
+    box-shadow: none;
   }
 
   .title-version {
