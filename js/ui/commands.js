@@ -332,19 +332,12 @@ async function handleStart(args) {
     Display.blank();
     Display.info('CLAVE PRIVADA (nsec) - GUÁRDALA:');
     Display.addLine(`  ${nsec}`, 'warning');
-          <button class="copy-btn" onclick="copyToClipboard('private-key-${Date.now()}')">Copiar</button>
-        </div>
-      </div>
     `);
     Display.warning('⚠️  IMPORTANTE:');
     Display.blank();
     Display.dim(`  • ${SECURITY_NOTICES.KEY_PURPOSE}`);
     Display.dim(`  • ${SECURITY_NOTICES.FUNDS_LOCATION}`);
     Display.dim(`  • ${SECURITY_NOTICES.NOSTR_COMPATIBLE}`);
-    Display.blank();
-    Display.dim(`  • ${SECURITY_NOTICES.BACKUP_REMINDER}`);
-    Display.dim(`  • ${SECURITY_NOTICES.NO_RECOVERY}`);
-    Display.blank();
 
   } catch (error) {
     Logger.error('Start command error:', error);
