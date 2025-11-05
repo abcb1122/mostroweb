@@ -219,14 +219,19 @@ export const COMMANDS = {
   DISCOVER: '/discover',
   REFRESH: '/refresh',
 
-  // Fase 2+ (placeholder)
+  // Fase 2 - Orders & Discovery
+  LISTORDERS: '/listorders',
+
+  // Fase 3 - Trading
+  NEWORDER: '/neworder',
+  TAKEBUY: '/takebuy',
+  TAKESELL: '/takesell',
+  CANCEL: '/cancel',
+
+  // Deprecated/Alias (usar /neworder)
   RESTORE: '/restore',
   NEWSELL: '/newsell',
-  NEWBUY: '/newbuy',
-  LISTORDERS: '/listorders',
-  CANCEL: '/cancel',
-  TAKEBUY: '/takebuy',
-  TAKESELL: '/takesell'
+  NEWBUY: '/newbuy'
 };
 
 // Información de comandos
@@ -321,6 +326,31 @@ export const COMMAND_INFO = {
     usage: '/listorders [buy|sell] [fiatCode]',
     aliases: ['orders', 'list'],
     examples: ['/listorders', '/listorders buy', '/listorders sell USD']
+  },
+  [COMMANDS.NEWORDER]: {
+    description: 'Crear nueva orden de compra o venta',
+    usage: '/neworder <buy|sell> <amount> <currency> <payment-method> [premium] [mostro-pubkey]',
+    aliases: ['order'],
+    examples: [
+      '/neworder buy 100 USD Strike',
+      '/neworder sell 50 EUR Revolut 2',
+      '/neworder buy 1000 ARS "Face to face"'
+    ]
+  },
+  [COMMANDS.TAKEBUY]: {
+    description: 'Tomar una orden de compra existente',
+    usage: '/takebuy <order-id> [amount]',
+    examples: ['/takebuy abc123def456']
+  },
+  [COMMANDS.TAKESELL]: {
+    description: 'Tomar una orden de venta existente',
+    usage: '/takesell <order-id> [amount]',
+    examples: ['/takesell abc123def456']
+  },
+  [COMMANDS.CANCEL]: {
+    description: 'Cancelar una orden pendiente',
+    usage: '/cancel <order-id>',
+    examples: ['/cancel abc123def456']
   }
 };
 

@@ -10,6 +10,7 @@ import Display from './display.js';
 import KeyManager from '../core/keyManager.js';
 import RelayManager from '../core/relayManager.js';
 import Discovery from '../mostro/discovery.js';
+import MostroMessaging from '../mostro/messaging.js';
 import {
   promptPassword,
   promptPasswordConfirm,
@@ -152,15 +153,30 @@ export async function executeCommand(input) {
         await handleListOrders(args);
         break;
 
-      // Comandos no implementados aún (Fase 3+)
+      // Trading Commands (Fase 3)
+      case COMMANDS.NEWORDER:
+      case '/order':
+        await handleNewOrder(args);
+        break;
+
+      case COMMANDS.TAKEBUY:
+        await handleTakeBuy(args);
+        break;
+
+      case COMMANDS.TAKESELL:
+        await handleTakeSell(args);
+        break;
+
+      case COMMANDS.CANCEL:
+        await handleCancel(args);
+        break;
+
+      // Comandos no implementados aún
       case COMMANDS.RESTORE:
       case COMMANDS.NEWSELL:
       case COMMANDS.NEWBUY:
-      case COMMANDS.CANCEL:
-      case COMMANDS.TAKEBUY:
-      case COMMANDS.TAKESELL:
         Display.warning(`${command} - ${ERROR_MESSAGES.COMMAND_NOT_IMPLEMENTED}`);
-        Display.info('Este comando estará disponible en Fase 3');
+        Display.info('Usa /neworder para crear órdenes');
         break;
 
       default:
@@ -993,6 +1009,7 @@ async function handleListOrders(args) {
       if (!mostro) return;
 
       Display.addLine(`${mostro.toDisplayString()}`, 'info');
+      Display.addLine(`  Pubkey: ${mostroPubkey.slice(0, 16)}...${mostroPubkey.slice(-8)}`, 'dim');
       Display.blank();
 
       mostroOrders.slice(0, maxOrdersPerMostro).forEach(order => {
@@ -1015,9 +1032,11 @@ async function handleListOrders(args) {
     // Footer
     Display.dim('Leyenda: 📗 = COMPRA | 📕 = VENTA | 🟢 = Mostro Activo');
     Display.blank();
-    Display.info('Para tomar una orden, usa:');
-    Display.dim('  /takebuy <order-id>  - Tomar una orden de compra');
-    Display.dim('  /takesell <order-id> - Tomar una orden de venta');
+    Display.info('Comandos disponibles:');
+    Display.dim('  /neworder buy 100 USD Strike   - Crear orden de compra');
+    Display.dim('  /neworder sell 50 EUR Revolut  - Crear orden de venta');
+    Display.dim('  /takebuy <order-id>            - Tomar orden de compra');
+    Display.dim('  /takesell <order-id>           - Tomar orden de venta');
 
     if (!Discovery.isActive()) {
       Display.blank();
@@ -1028,6 +1047,282 @@ async function handleListOrders(args) {
   } catch (error) {
     Logger.error('ListOrders command error:', error);
     Display.error(`Error al listar órdenes: ${error.message}`);
+  }
+}
+
+/**
+ * Comando: /neworder
+ * Crear nueva orden de compra o venta en Mostro
+ */
+async function handleNewOrder(args) {
+  try {
+    // Verificar que esté conectado a relays
+    if (!RelayManager.isConnected()) {
+      Display.error('No estás conectado a ningún relay.');
+      Display.dim('Ejecuta /discover primero para conectarte.');
+      return;
+    }
+
+    // Verificar identidad
+    const identityData = sessionStorage.getItem('mostro_identity');
+    if (!identityData) {
+      Display.error('No tienes una identidad activa.');
+      Display.dim('Ejecuta /start o /login para crear/importar una identidad.');
+      return;
+    }
+
+    // Validar argumentos mínimos
+    if (args.length < 4) {
+      Display.error('Parámetros insuficientes.');
+      Display.blank();
+      Display.info('Uso: /neworder <buy|sell> <amount> <currency> <payment-method> [premium] [mostro-pubkey]');
+      Display.blank();
+      Display.dim('Ejemplos:');
+      Display.dim('  /neworder buy 100 USD Strike');
+      Display.dim('  /neworder sell 50 EUR Revolut 2');
+      Display.dim('  /neworder buy 1000 ARS "Face to face"');
+      Display.blank();
+      Display.info('Nota: Para especificar un Mostro específico, agrega su pubkey al final');
+      Display.dim('  /neworder buy 100 USD Strike 0 npub1abc...');
+      return;
+    }
+
+    // Parsear argumentos
+    const orderType = args[0].toLowerCase();
+    const amount = parseFloat(args[1]);
+    const currency = args[2].toUpperCase();
+    const paymentMethod = args[3];
+    const premium = args[4] ? parseFloat(args[4]) : 0;
+    const mostroPubkey = args[5] || null;
+
+    // Validar tipo de orden
+    if (orderType !== 'buy' && orderType !== 'sell') {
+      Display.error(`Tipo de orden inválido: ${orderType}`);
+      Display.dim('Debe ser "buy" o "sell"');
+      return;
+    }
+
+    // Validar cantidad
+    if (isNaN(amount) || amount <= 0) {
+      Display.error(`Cantidad inválida: ${args[1]}`);
+      Display.dim('Debe ser un número mayor que 0');
+      return;
+    }
+
+    // Validar premium
+    if (isNaN(premium)) {
+      Display.error(`Premium inválido: ${args[4]}`);
+      Display.dim('Debe ser un número (puede ser negativo)');
+      return;
+    }
+
+    // Determinar pubkey de Mostro
+    let targetMostro = mostroPubkey;
+
+    if (!targetMostro) {
+      // Si no se especificó, intentar obtener uno del discovery
+      const mostros = Discovery.getMostroInstances();
+
+      if (mostros.length === 0) {
+        Display.warning('No se encontraron instancias de Mostro.');
+        Display.blank();
+        Display.info('Opciones:');
+        Display.dim('  1. Ejecuta /discover para buscar Mostros activos');
+        Display.dim('  2. Especifica un pubkey de Mostro manualmente:');
+        Display.dim('     /neworder buy 100 USD Strike 0 npub1abc...');
+        return;
+      }
+
+      // Usar el primero encontrado (el que más órdenes tenga)
+      targetMostro = mostros[0].pubkey;
+      Display.info(`Usando Mostro: ${mostros[0].getShortPubkey()}`);
+      Display.blank();
+    }
+
+    // Si el pubkey es npub, convertirlo a hex
+    if (targetMostro.startsWith('npub1')) {
+      const { nip19 } = window.nostrTools;
+      try {
+        const decoded = nip19.decode(targetMostro);
+        targetMostro = decoded.data;
+      } catch (error) {
+        Display.error('Formato de pubkey inválido.');
+        return;
+      }
+    }
+
+    // Configurar el pubkey de Mostro en el messaging
+    MostroMessaging.setMostroPubkey(targetMostro);
+
+    // Mostrar resumen
+    Display.info('=== NUEVA ORDEN ===');
+    Display.blank();
+    Display.addLine(`Tipo: ${orderType.toUpperCase()}`, 'info');
+    Display.addLine(`Cantidad: ${amount} ${currency}`, 'normal');
+    Display.addLine(`Método de pago: ${paymentMethod}`, 'normal');
+    if (premium !== 0) {
+      const sign = premium > 0 ? '+' : '';
+      Display.addLine(`Premium: ${sign}${premium}%`, 'normal');
+    }
+    Display.addLine(`Mostro: ${targetMostro.slice(0, 16)}...`, 'dim');
+    Display.blank();
+    Display.info('Enviando orden a Mostro...');
+
+    // Crear orden
+    const orderParams = {
+      fiatCode: currency,
+      fiatAmount: amount,
+      paymentMethod: paymentMethod,
+      premium: premium
+    };
+
+    let result;
+    if (orderType === 'buy') {
+      result = await MostroMessaging.createBuyOrder(orderParams);
+    } else {
+      result = await MostroMessaging.createSellOrder(orderParams);
+    }
+
+    Display.blank();
+    Display.success('✓ Orden enviada exitosamente');
+    Display.blank();
+    Display.addLine(`Request ID: ${result.requestId}`, 'dim');
+    Display.addLine(`Event ID: ${result.eventId.slice(0, 16)}...`, 'dim');
+    Display.blank();
+    Display.info('Espera la confirmación de Mostro...');
+    Display.dim('La orden aparecerá en /listorders cuando sea confirmada.');
+
+  } catch (error) {
+    Logger.error('NewOrder command error:', error);
+    Display.error(`Error al crear orden: ${error.message}`);
+  }
+}
+
+/**
+ * Comando: /takebuy
+ * Tomar una orden de compra existente
+ */
+async function handleTakeBuy(args) {
+  try {
+    if (args.length === 0) {
+      Display.error('Debes especificar el ID de la orden.');
+      Display.dim('Uso: /takebuy <order-id> [amount]');
+      Display.dim('Ejemplo: /takebuy abc123def456');
+      return;
+    }
+
+    const orderId = args[0];
+    const amount = args[1] ? parseFloat(args[1]) : null;
+
+    // Verificar que tengamos un Mostro configurado
+    const order = Discovery.getOrder(orderId);
+    if (!order) {
+      Display.error(`Orden no encontrada: ${orderId}`);
+      Display.dim('Usa /listorders para ver órdenes disponibles.');
+      return;
+    }
+
+    MostroMessaging.setMostroPubkey(order.mostroPubkey);
+
+    Display.info(`Tomando orden de compra ${orderId.slice(0, 8)}...`);
+
+    const result = await MostroMessaging.takeBuyOrder(orderId, amount);
+
+    Display.blank();
+    Display.success('✓ Orden tomada exitosamente');
+    Display.blank();
+    Display.addLine(`Request ID: ${result.requestId}`, 'dim');
+    Display.blank();
+    Display.info('Espera instrucciones de Mostro...');
+
+  } catch (error) {
+    Logger.error('TakeBuy command error:', error);
+    Display.error(`Error al tomar orden: ${error.message}`);
+  }
+}
+
+/**
+ * Comando: /takesell
+ * Tomar una orden de venta existente
+ */
+async function handleTakeSell(args) {
+  try {
+    if (args.length === 0) {
+      Display.error('Debes especificar el ID de la orden.');
+      Display.dim('Uso: /takesell <order-id> [amount]');
+      Display.dim('Ejemplo: /takesell abc123def456');
+      return;
+    }
+
+    const orderId = args[0];
+    const amount = args[1] ? parseFloat(args[1]) : null;
+
+    // Verificar que tengamos un Mostro configurado
+    const order = Discovery.getOrder(orderId);
+    if (!order) {
+      Display.error(`Orden no encontrada: ${orderId}`);
+      Display.dim('Usa /listorders para ver órdenes disponibles.');
+      return;
+    }
+
+    MostroMessaging.setMostroPubkey(order.mostroPubkey);
+
+    Display.info(`Tomando orden de venta ${orderId.slice(0, 8)}...`);
+
+    const result = await MostroMessaging.takeSellOrder(orderId, amount);
+
+    Display.blank();
+    Display.success('✓ Orden tomada exitosamente');
+    Display.blank();
+    Display.addLine(`Request ID: ${result.requestId}`, 'dim');
+    Display.blank();
+    Display.info('Espera instrucciones de Mostro...');
+
+  } catch (error) {
+    Logger.error('TakeSell command error:', error);
+    Display.error(`Error al tomar orden: ${error.message}`);
+  }
+}
+
+/**
+ * Comando: /cancel
+ * Cancelar una orden pendiente
+ */
+async function handleCancel(args) {
+  try {
+    if (args.length === 0) {
+      Display.error('Debes especificar el ID de la orden.');
+      Display.dim('Uso: /cancel <order-id>');
+      Display.dim('Ejemplo: /cancel abc123def456');
+      return;
+    }
+
+    const orderId = args[0];
+
+    // Verificar que tengamos un Mostro configurado
+    const order = Discovery.getOrder(orderId);
+    if (!order) {
+      Display.error(`Orden no encontrada: ${orderId}`);
+      Display.dim('Solo puedes cancelar órdenes que aparecen en /listorders.');
+      return;
+    }
+
+    MostroMessaging.setMostroPubkey(order.mostroPubkey);
+
+    Display.info(`Cancelando orden ${orderId.slice(0, 8)}...`);
+
+    const result = await MostroMessaging.cancelOrder(orderId);
+
+    Display.blank();
+    Display.success('✓ Solicitud de cancelación enviada');
+    Display.blank();
+    Display.addLine(`Request ID: ${result.requestId}`, 'dim');
+    Display.blank();
+    Display.info('Espera confirmación de Mostro...');
+
+  } catch (error) {
+    Logger.error('Cancel command error:', error);
+    Display.error(`Error al cancelar orden: ${error.message}`);
   }
 }
 

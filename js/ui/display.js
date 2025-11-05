@@ -178,7 +178,7 @@ export function showHelp() {
   addHTML(`
     <div class="help-table">
       <div class="help-section">
-        <div class="help-section-title">COMANDOS DISPONIBLES</div>
+        <div class="help-section-title">COMANDOS BÁSICOS</div>
 
         <div class="help-command">
           <div class="help-command-name">/help [command]</div>
@@ -207,30 +207,85 @@ export function showHelp() {
       </div>
 
       <div class="help-section">
-        <div class="help-section-title">PRÓXIMAMENTE (FASE 2+)</div>
+        <div class="help-section-title">IDENTIDAD & SESIÓN</div>
 
         <div class="help-command">
           <div class="help-command-name">/start</div>
-          <div class="help-command-desc">Inicializar sesión con Mostro</div>
+          <div class="help-command-desc">Generar nueva identidad Nostr temporal</div>
         </div>
 
         <div class="help-command">
-          <div class="help-command-name">/newsell</div>
-          <div class="help-command-desc">Crear nueva orden de venta</div>
+          <div class="help-command-name">/login</div>
+          <div class="help-command-desc">Importar identidad existente (nsec)</div>
         </div>
 
         <div class="help-command">
-          <div class="help-command-name">/newbuy</div>
-          <div class="help-command-desc">Crear nueva orden de compra</div>
+          <div class="help-command-name">/identity</div>
+          <div class="help-command-desc">Mostrar tu identidad actual</div>
         </div>
 
         <div class="help-command">
-          <div class="help-command-name">/listorders</div>
-          <div class="help-command-desc">Listar órdenes disponibles</div>
+          <div class="help-command-name">/export</div>
+          <div class="help-command-desc">Exportar tu clave privada (backup)</div>
+        </div>
+      </div>
+
+      <div class="help-section">
+        <div class="help-section-title">RELAYS & DESCUBRIMIENTO</div>
+
+        <div class="help-command">
+          <div class="help-command-name">/relays</div>
+          <div class="help-command-desc">Ver estado de conexión a relays</div>
+        </div>
+
+        <div class="help-command">
+          <div class="help-command-name">/discover</div>
+          <div class="help-command-desc">Buscar órdenes Mostro en relays</div>
+        </div>
+
+        <div class="help-command">
+          <div class="help-command-name">/refresh</div>
+          <div class="help-command-desc">Actualizar órdenes desde relays</div>
+        </div>
+
+        <div class="help-command">
+          <div class="help-command-name">/listorders [type] [currency]</div>
+          <div class="help-command-desc">Listar órdenes descubiertas</div>
+        </div>
+      </div>
+
+      <div class="help-section">
+        <div class="help-section-title">TRADING P2P</div>
+
+        <div class="help-command">
+          <div class="help-command-name">/neworder &lt;buy|sell&gt; &lt;amount&gt; &lt;currency&gt; &lt;payment&gt; [premium]</div>
+          <div class="help-command-desc">Crear nueva orden de compra o venta</div>
+        </div>
+
+        <div class="help-command">
+          <div class="help-command-name">/takebuy &lt;order-id&gt;</div>
+          <div class="help-command-desc">Tomar una orden de compra existente</div>
+        </div>
+
+        <div class="help-command">
+          <div class="help-command-name">/takesell &lt;order-id&gt;</div>
+          <div class="help-command-desc">Tomar una orden de venta existente</div>
+        </div>
+
+        <div class="help-command">
+          <div class="help-command-name">/cancel &lt;order-id&gt;</div>
+          <div class="help-command-desc">Cancelar una orden pendiente</div>
         </div>
       </div>
     </div>
   `);
+  blank();
+  info('Ejemplos de uso:');
+  dim('  /start                                # Crear identidad');
+  dim('  /discover                             # Buscar órdenes');
+  dim('  /listorders buy USD                   # Ver órdenes de compra en USD');
+  dim('  /neworder buy 100 USD Strike          # Crear orden de compra');
+  dim('  /takesell abc123                      # Tomar orden de venta');
   blank();
   dim('Tip: Usa las flechas (↑ ↓) para navegar el historial de comandos');
 }
