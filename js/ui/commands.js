@@ -332,7 +332,9 @@ async function handleStart(args) {
     Display.blank();
     Display.info('CLAVE PRIVADA (nsec) - GUÁRDALA:');
     Display.addLine(`  ${nsec}`, 'warning');
-    `);
+    Display.blank();
+    Display.addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'dim');
+    Display.blank();
     Display.warning('⚠️  IMPORTANTE:');
     Display.blank();
     Display.dim(`  • ${SECURITY_NOTICES.KEY_PURPOSE}`);
