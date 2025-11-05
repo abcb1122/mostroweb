@@ -38,12 +38,14 @@ jobs:
           cp index.html _site/
           cp -r css _site/
           cp -r js _site/
-          cp .nojekyll _site/
+          if [ -f .nojekyll ]; then
+            cp .nojekyll _site/
+          fi
           echo "Files to deploy:"
           ls -la _site/
 
       - name: Setup Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v4
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
