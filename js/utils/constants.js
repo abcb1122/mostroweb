@@ -176,6 +176,16 @@ export const SUCCESS_MESSAGES = {
   RELAY_REMOVED: 'Relay removed successfully'
 };
 
+// Mensajes de seguridad (nuevo formato)
+export const SECURITY_NOTICES = {
+  KEY_PURPOSE: 'Esta llave es solo para firmar mensajes en Mostro',
+  FUNDS_LOCATION: 'Tus satoshis se reciben donde tú elijas, no aquí',
+  NOSTR_COMPATIBLE: 'Puedes usar la misma llave en otros clientes Nostr',
+  BACKUP_REMINDER: 'Guarda tu llave privada (nsec) en un lugar seguro',
+  NO_RECOVERY: 'Si pierdes tu nsec, no podrás recuperar esta identidad',
+  REUSABLE_KEY: 'Esta llave es reutilizable en cualquier cliente Mostro/Nostr'
+};
+
 // Regex patterns
 export const PATTERNS = {
   COMMAND: /^\/[a-z]+/i,
@@ -197,6 +207,7 @@ export const COMMANDS = {
 
   // Fase 2 - Identity & Key Management
   START: '/start',
+  LOGIN: '/login',
   IMPORT: '/import',
   EXPORT: '/export',
   IDENTITY: '/identity',
@@ -246,10 +257,16 @@ export const COMMAND_INFO = {
     aliases: ['stat']
   },
   [COMMANDS.START]: {
-    description: 'Start a new session (generate or unlock identity)',
+    description: 'Generate new Nostr identity for trading',
     usage: '/start',
     aliases: ['s'],
     examples: ['/start']
+  },
+  [COMMANDS.LOGIN]: {
+    description: 'Login with existing private key (nsec)',
+    usage: '/login',
+    aliases: ['l'],
+    examples: ['/login']
   },
   [COMMANDS.IMPORT]: {
     description: 'Import an existing Nostr private key',
@@ -347,6 +364,7 @@ export default {
   CRYPTO_CONFIG,
   ERROR_MESSAGES,
   SUCCESS_MESSAGES,
+  SECURITY_NOTICES,
   PATTERNS,
   COMMANDS,
   COMMAND_INFO,

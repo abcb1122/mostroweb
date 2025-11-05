@@ -138,19 +138,24 @@ export function scrollToBottom() {
  * Muestra el banner de bienvenida
  */
 export function showWelcome() {
-  addHTML(`
-    <div class="welcome-banner">
-      <div class="subtitle">Welcome to Mostro user web interface</div>
-      <div class="subtitle">Please select a method to start</div>
-      <div class="separator"></div>
-      <div class="info">
-        • New user: <strong>/start</strong>
-      </div>
-      <div class="info">
-        • User login: <strong>/login</strong>
-      </div>
-    </div>
-  `);
+  blank();
+  addLine('  ███╗   ███╗ ██████╗ ███████╗████████╗██████╗  ██████╗ ', 'success');
+  addLine('  ████╗ ████║██╔═══██╗██╔════╝╚══██╔══╝██╔══██╗██╔═══██╗', 'success');
+  addLine('  ██╔████╔██║██║   ██║███████╗   ██║   ██████╔╝██║   ██║', 'success');
+  addLine('  ██║╚██╔╝██║██║   ██║╚════██║   ██║   ██╔══██╗██║   ██║', 'success');
+  addLine('  ██║ ╚═╝ ██║╚██████╔╝███████║   ██║   ██║  ██║╚██████╔╝', 'success');
+  addLine('  ╚═╝     ╚═╝ ╚═════╝ ╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ', 'success');
+  blank();
+  addLine('          P2P BITCOIN TRADING TERMINAL', 'info');
+  blank();
+  blank();
+  addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'dim');
+  addLine('  GETTING STARTED:', 'info');
+  blank();
+  addLine('    /start    - Generate new Nostr identity for trading', 'normal');
+  addLine('    /login    - Login with existing private key (nsec)', 'normal');
+  blank();
+  addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'dim');
   blank();
 }
 

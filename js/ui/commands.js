@@ -3,7 +3,7 @@
  * Parser y ejecutor de comandos
  */
 
-import { COMMANDS, THEMES, ERROR_MESSAGES, SUCCESS_MESSAGES } from '../utils/constants.js';
+import { COMMANDS, THEMES, ERROR_MESSAGES, SUCCESS_MESSAGES, SECURITY_NOTICES } from '../utils/constants.js';
 import { isValidTheme, parseCommandArgs } from '../utils/helpers.js';
 import Logger from '../utils/logger.js';
 import Display from './display.js';
@@ -98,6 +98,11 @@ export async function executeCommand(input) {
       case COMMANDS.START:
       case '/s':
         await handleStart(args);
+        break;
+
+      case COMMANDS.LOGIN:
+      case '/l':
+        await handleLogin(args);
         break;
 
       case COMMANDS.IMPORT:
@@ -267,83 +272,202 @@ function handleExit() {
 
 /**
  * Comando: /start
- * Iniciar sesión (generar nueva identidad o unlock existente)
+ * Generar nueva identidad Nostr (sin password)
  */
 async function handleStart(args) {
   try {
-    // Inicializar KeyManager si no está inicializado
-    await KeyManager.init();
+    // Verificar si ya tiene identidad en sesión
+    const existingKey = sessionStorage.getItem('mostro_identity');
 
-    const hasIdentity = KeyManager.hasIdentity();
-
-    if (!hasIdentity) {
-      // Primera vez: generar nueva identidad
-      Display.info('No identity found. Creating new identity...');
+    if (existingKey) {
+      Display.warning('Ya tienes una identidad activa en esta sesión.');
       Display.blank();
-      Display.warning('⚠️  SECURITY NOTICE');
-      Display.dim('Your private key will be encrypted and stored in your browser.');
+      const identity = JSON.parse(existingKey);
+      Display.info('Tu identidad actual:');
+      Display.addLine(`  ${identity.npub}`, 'success');
       Display.blank();
-      Display.dim('Important:');
-      Display.dim('  • Use a STRONG password (12+ characters recommended)');
-      Display.dim('  • Backup your key with /export after creation');
-      Display.dim('  • Do not use on shared/public computers');
-      Display.blank();
-
-      // Solicitar password
-      const password = await promptPasswordConfirm();
-
-      if (!password) {
-        Display.error('Operation cancelled.');
-        return;
-      }
-
-      // Generar nueva identidad
-      await KeyManager.generateNewIdentity();
-      await KeyManager.setPassword(password);
-
-      const npub = KeyManager.getPublicKey('npub');
-
-      Display.blank();
-      Display.success(SUCCESS_MESSAGES.KEY_GENERATED);
-      Display.blank();
-      Display.info('Your Nostr public key (npub):');
-      Display.addLine(npub, 'success');
-      Display.blank();
-      Display.warning('⚠️  BACKUP YOUR KEY');
-      Display.dim('Use /export to show your private key for backup.');
-      Display.dim('Without this backup, you cannot recover your identity!');
-      Display.blank();
-      Display.success('✓ Session started. Ready to trade!');
-
-    } else {
-      // Usuario existente: unlock
-      Display.info('Identity found. Unlocking session...');
-      Display.blank();
-
-      const password = await promptPassword('Enter your password:');
-
-      if (!password) {
-        Display.error('Operation cancelled.');
-        return;
-      }
-
-      // Desbloquear claves
-      await KeyManager.unlockKeys(password);
-
-      const npub = KeyManager.getPublicKey('npub');
-      const tradeIndex = KeyManager.getTradeIndex();
-
-      Display.blank();
-      Display.success(SUCCESS_MESSAGES.SESSION_UNLOCKED);
-      Display.info(`Logged in as: ${npub.substring(0, 30)}...`);
-      Display.info(`Trade index: ${tradeIndex}`);
-      Display.blank();
-      Display.dim('Ready to create orders and trades.');
+      Display.dim('Usa /export para ver tu clave privada (nsec)');
+      return;
     }
+
+    // Generar nueva identidad
+    Display.info('Generando nueva identidad Nostr...');
+    Display.blank();
+
+    // Inicializar nostr-tools
+    if (!window.nostrTools) {
+      Display.error('Nostr-tools library not loaded yet. Please wait and try again.');
+      return;
+    }
+
+    const nostrTools = window.nostrTools;
+    const { nip19 } = nostrTools;
+
+    // Generar keypair
+    const secretKey = nostrTools.generateSecretKey();
+    const publicKey = nostrTools.getPublicKey(secretKey);
+
+    // Convertir a formatos legibles
+    const npub = nip19.npubEncode(publicKey);
+    const nsec = nip19.nsecEncode(secretKey);
+
+    // Guardar en sessionStorage (solo durante la sesión)
+    const identity = {
+      secretKey: Array.from(secretKey), // Convertir Uint8Array a Array para JSON
+      publicKey,
+      npub,
+      nsec,
+      createdAt: Date.now()
+    };
+
+    sessionStorage.setItem('mostro_identity', JSON.stringify(identity));
+
+    // Mostrar resultado
+    Display.success('✓ Nueva identidad generada');
+    Display.blank();
+    Display.addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'dim');
+    Display.blank();
+    Display.info('CLAVE PÚBLICA (npub):');
+    Display.addLine(`  ${npub}`, 'success');
+    Display.blank();
+    Display.info('CLAVE PRIVADA (nsec) - GUÁRDALA:');
+    Display.addLine(`  ${nsec}`, 'warning');
+    Display.blank();
+    Display.addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'dim');
+    Display.blank();
+    Display.warning('⚠️  IMPORTANTE:');
+    Display.blank();
+    Display.dim(`  • ${SECURITY_NOTICES.KEY_PURPOSE}`);
+    Display.dim(`  • ${SECURITY_NOTICES.FUNDS_LOCATION}`);
+    Display.dim(`  • ${SECURITY_NOTICES.NOSTR_COMPATIBLE}`);
+    Display.blank();
+    Display.dim(`  • ${SECURITY_NOTICES.BACKUP_REMINDER}`);
+    Display.dim(`  • ${SECURITY_NOTICES.NO_RECOVERY}`);
+    Display.blank();
 
   } catch (error) {
     Logger.error('Start command error:', error);
-    Display.error(`Failed to start: ${error.message}`);
+    Display.error(`Error al generar identidad: ${error.message}`);
+  }
+}
+
+/**
+ * Comando: /login
+ * Importar clave privada existente (nsec)
+ */
+async function handleLogin(args) {
+  try {
+    // Verificar si ya tiene identidad en sesión
+    const existingKey = sessionStorage.getItem('mostro_identity');
+
+    if (existingKey) {
+      Display.warning('Ya tienes una identidad activa en esta sesión.');
+      Display.blank();
+      const identity = JSON.parse(existingKey);
+      Display.info('Tu identidad actual:');
+      Display.addLine(`  ${identity.npub}`, 'success');
+      Display.blank();
+      Display.dim('Cierra esta pestaña y abre una nueva para usar otra identidad.');
+      return;
+    }
+
+    // Inicializar nostr-tools
+    if (!window.nostrTools) {
+      Display.error('Nostr-tools library not loaded yet. Please wait and try again.');
+      return;
+    }
+
+    const nostrTools = window.nostrTools;
+    const { nip19 } = nostrTools;
+
+    // Mostrar advertencias
+    Display.blank();
+    Display.warning('⚠️  IMPORTANTE:');
+    Display.blank();
+    Display.dim(`  • ${SECURITY_NOTICES.KEY_PURPOSE}`);
+    Display.dim(`  • ${SECURITY_NOTICES.FUNDS_LOCATION}`);
+    Display.dim(`  • ${SECURITY_NOTICES.NOSTR_COMPATIBLE}`);
+    Display.blank();
+
+    // Solicitar private key
+    Display.info('Ingresa tu clave privada (nsec):');
+    const privateKey = await promptPrivateKey();
+
+    if (!privateKey) {
+      Display.error('Operación cancelada.');
+      return;
+    }
+
+    // Importar y validar
+    Display.blank();
+    Display.info('Validando clave privada...');
+
+    let secretKey;
+    let publicKey;
+
+    // Detectar formato (nsec o hex)
+    if (privateKey.startsWith('nsec1')) {
+      // Formato nsec (bech32)
+      try {
+        const decoded = nip19.decode(privateKey);
+        if (decoded.type !== 'nsec') {
+          throw new Error('Invalid nsec format');
+        }
+        secretKey = decoded.data;
+      } catch (error) {
+        Display.error('Formato nsec inválido. Verifica tu clave.');
+        return;
+      }
+    } else if (/^[a-f0-9]{64}$/i.test(privateKey)) {
+      // Formato hex
+      secretKey = new Uint8Array(
+        privateKey.match(/.{2}/g).map(byte => parseInt(byte, 16))
+      );
+    } else {
+      Display.error('Formato de clave inválido. Usa nsec o hex.');
+      return;
+    }
+
+    // Derivar public key
+    try {
+      publicKey = nostrTools.getPublicKey(secretKey);
+    } catch (error) {
+      Display.error('Clave privada inválida.');
+      return;
+    }
+
+    // Convertir a formatos legibles
+    const npub = nip19.npubEncode(publicKey);
+    const nsec = nip19.nsecEncode(secretKey);
+
+    // Guardar en sessionStorage
+    const identity = {
+      secretKey: Array.from(secretKey),
+      publicKey,
+      npub,
+      nsec,
+      createdAt: Date.now()
+    };
+
+    sessionStorage.setItem('mostro_identity', JSON.stringify(identity));
+
+    // Mostrar resultado
+    Display.blank();
+    Display.success('✓ Identidad importada correctamente');
+    Display.blank();
+    Display.addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'dim');
+    Display.blank();
+    Display.info('TU IDENTIDAD:');
+    Display.addLine(`  ${npub}`, 'success');
+    Display.blank();
+    Display.addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'dim');
+    Display.blank();
+    Display.dim('Listo para comenzar a tradear en Mostro.');
+    Display.blank();
+
+  } catch (error) {
+    Logger.error('Login command error:', error);
+    Display.error(`Error al importar identidad: ${error.message}`);
   }
 }
 

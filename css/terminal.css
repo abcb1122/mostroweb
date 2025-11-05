@@ -26,7 +26,9 @@
 
   /* Tipografía */
   --font-mono: 'Courier New', 'Consolas', 'Monaco', 'Lucida Console', monospace;
-  --font-size: 14px;
+  --font-size: 18px;           /* Aumentado de 14px a 18px */
+  --font-size-large: 22px;     /* Nueva: para títulos */
+  --font-size-small: 16px;     /* Nueva: para texto secundario */
   --line-height: 1.6;
   --letter-spacing: 0.5px;
 
@@ -348,7 +350,8 @@ body {
   }
 
   :root {
-    --font-size: 12px;
+    --font-size: 16px;           /* Tablet: mantener legible */
+    --font-size-large: 20px;
   }
 
   .terminal-header,
@@ -375,7 +378,8 @@ body {
   }
 
   :root {
-    --font-size: 11px;
+    --font-size: 14px;           /* Móviles: mínimo legible */
+    --font-size-large: 18px;
   }
 
   .title-version {
