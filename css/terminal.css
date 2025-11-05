@@ -186,6 +186,12 @@ body {
   word-wrap: break-word;
   position: relative;
   text-shadow: 0 0 2px var(--glow-color);
+  /* Habilitar selección de texto */
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+  cursor: text;
 }
 
 /* Scrollbar personalizado */
@@ -225,6 +231,10 @@ body {
   font-weight: bold;
   margin-right: var(--spacing-sm);
   text-shadow: 0 0 3px var(--glow-color);
+  /* Mantener no-seleccionable (elemento decorativo) */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
 }
 
@@ -244,6 +254,10 @@ body {
   color: var(--cursor-color);
   font-weight: bold;
   animation: blink 1s step-end infinite;
+  /* Mantener no-seleccionable (elemento decorativo) */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
   user-select: none;
   margin-left: 2px;
 }
