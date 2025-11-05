@@ -63,17 +63,48 @@ function setupEventListeners() {
   // Input: Actualizar cursor position
   state.input.addEventListener('input', handleInput);
 
-  // Click en terminal: focus en input
+  // Click en terminal: focus en input (solo si no hay selección de texto)
   const container = document.getElementById('terminal-container');
   if (container) {
-    container.addEventListener('click', () => {
-      state.input.focus();
+    container.addEventListener('click', (e) => {
+      // NO hacer focus si:
+      // 1. Hay texto seleccionado
+      // 2. El click fue en el área de output (permitir selección)
+      // 3. El click fue en un input, button u otro elemento interactivo
+
+      const selection = window.getSelection();
+      const hasTextSelected = selection && selection.toString().length > 0;
+
+      const clickedOutput = e.target.closest('.terminal-output');
+      const clickedInteractive = e.target.tagName === 'INPUT' ||
+                                  e.target.tagName === 'BUTTON' ||
+                                  e.target.tagName === 'A';
+
+      // Solo hacer focus si es un click simple en el container (no en output ni hay selección)
+      if (!hasTextSelected && !clickedOutput && !clickedInteractive) {
+        state.input.focus();
+      }
     });
   }
 
-  // Prevenir pérdida de foco
-  state.input.addEventListener('blur', () => {
-    setTimeout(() => state.input.focus(), 100);
+  // Prevenir pérdida de foco (pero permitir selección de texto)
+  state.input.addEventListener('blur', (e) => {
+    // NO recuperar focus si:
+    // 1. El usuario está haciendo click en el output para seleccionar texto
+    // 2. Hay texto seleccionado
+
+    const relatedTarget = e.relatedTarget;
+    const clickedOutput = relatedTarget && relatedTarget.closest('.terminal-output');
+
+    setTimeout(() => {
+      const selection = window.getSelection();
+      const hasTextSelected = selection && selection.toString().length > 0;
+
+      // Solo recuperar focus si NO hay selección activa
+      if (!hasTextSelected && !clickedOutput) {
+        state.input.focus();
+      }
+    }, 100);
   });
 
   // Window resize: scroll to bottom
