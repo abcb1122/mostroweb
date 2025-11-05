@@ -160,17 +160,17 @@ export async function executeCommand(input) {
       case COMMANDS.TAKEBUY:
       case COMMANDS.TAKESELL:
         Display.warning(`${command} - ${ERROR_MESSAGES.COMMAND_NOT_IMPLEMENTED}`);
-        Display.info('This command will be available in Phase 3');
+        Display.info('Este comando estará disponible en Fase 3');
         break;
 
       default:
         // Comando no reconocido
-        Display.error(`Unknown command: ${command}`);
-        Display.dim('Type /help for available commands');
+        Display.error(`Comando desconocido: ${command}`);
+        Display.dim('Escribe /help para ver comandos disponibles');
     }
   } catch (error) {
     Logger.error('Commands: Error executing command', error);
-    Display.error(`Error executing command: ${error.message}`);
+    Display.error(`Error al ejecutar comando: ${error.message}`);
   }
 }
 
@@ -184,8 +184,8 @@ function handleHelp(args) {
   } else {
     // Ayuda específica de comando
     const cmd = args[0];
-    Display.info(`Help for ${cmd} - Coming soon`);
-    Display.dim('For now, use /help to see all commands');
+    Display.info(`Ayuda para ${cmd} - Próximamente`);
+    Display.dim('Por ahora, usa /help para ver todos los comandos');
   }
 }
 
@@ -203,28 +203,28 @@ function handleClear() {
 async function handleTheme(args) {
   if (args.length === 0) {
     // Mostrar temas disponibles
-    Display.info('Available themes:');
+    Display.info('Temas disponibles:');
     Display.blank();
     THEMES.forEach(theme => {
       Display.addLine(`  • ${theme}`, 'dim');
     });
     Display.blank();
-    Display.dim('Usage: /theme <color>');
-    Display.dim('Example: /theme matrix');
+    Display.dim('Uso: /theme <color>');
+    Display.dim('Ejemplo: /theme matrix');
     return;
   }
 
   const theme = args[0].toLowerCase();
 
   if (!isValidTheme(theme)) {
-    Display.error(`Invalid theme: ${theme}`);
-    Display.info(`Available themes: ${THEMES.join(', ')}`);
+    Display.error(`Tema inválido: ${theme}`);
+    Display.info(`Temas disponibles: ${THEMES.join(', ')}`);
     return;
   }
 
   // Aplicar tema
   applyTheme(theme);
-  Display.success(`Theme changed to: ${theme}`);
+  Display.success(`Tema cambiado a: ${theme}`);
 
   // Guardar preferencia
   const Storage = await import('../core/storage.js').then(m => m.default);
@@ -266,8 +266,8 @@ function handleStatus() {
  * Comando: /exit
  */
 function handleExit() {
-  Display.info('To close the application, simply close this browser tab.');
-  Display.dim('Your session data is saved locally and will be restored when you return.');
+  Display.info('Para cerrar la aplicación, cierra esta pestaña del navegador.');
+  Display.dim('Tus datos de sesión se guardan localmente y se restaurarán al regresar.');
 }
 
 /**
@@ -481,16 +481,16 @@ async function handleImport(args) {
     await KeyManager.init();
 
     if (KeyManager.hasIdentity()) {
-      Display.warning('Identity already exists!');
+      Display.warning('Ya existe una identidad');
       Display.blank();
 
       const confirm = await promptConfirmation(
-        'This will replace your current identity. Continue?',
+        'Esto reemplazará tu identidad actual. ¿Continuar?',
         'yes'
       );
 
       if (!confirm) {
-        Display.info('Import cancelled.');
+        Display.info('Importación cancelada.');
         return;
       }
 
@@ -499,19 +499,19 @@ async function handleImport(args) {
         KeyManager.deleteIdentity();
       } else {
         // Si está locked, necesita unlock primero para delete
-        Display.error('Please unlock your session first with /start, then try again.');
+        Display.error('Desbloquea tu sesión primero con /start e intenta de nuevo.');
         return;
       }
     }
 
-    Display.info('Import existing Nostr identity');
+    Display.info('Importar identidad Nostr existente');
     Display.blank();
 
     // Solicitar private key
     const privateKey = await promptPrivateKey();
 
     if (!privateKey) {
-      Display.error('Operation cancelled.');
+      Display.error('Operación cancelada.');
       return;
     }
 
@@ -523,7 +523,7 @@ async function handleImport(args) {
     const password = await promptPasswordConfirm();
 
     if (!password) {
-      Display.error('Operation cancelled.');
+      Display.error('Operación cancelada.');
       return;
     }
 
@@ -535,18 +535,18 @@ async function handleImport(args) {
     Display.blank();
     Display.success(SUCCESS_MESSAGES.KEY_IMPORTED);
     Display.blank();
-    Display.info('Your public key (npub):');
+    Display.info('Tu clave pública (npub):');
     Display.addLine(npub, 'success');
     Display.blank();
-    Display.warning('⚠️  BACKUP REMINDER');
-    Display.dim('If you lose your password, you\'ll need to re-import this key.');
-    Display.dim('Keep your nsec in a safe place!');
+    Display.warning('⚠️  RECORDATORIO DE RESPALDO');
+    Display.dim('Si pierdes tu contraseña, necesitarás re-importar esta clave.');
+    Display.dim('Mantén tu nsec en un lugar seguro');
     Display.blank();
-    Display.success('✓ Session started. Ready to trade!');
+    Display.success('✓ Sesión iniciada. Listo para tradear');
 
   } catch (error) {
     Logger.error('Import command error:', error);
-    Display.error(`Import failed: ${error.message}`);
+    Display.error(`Error al importar: ${error.message}`);
   }
 }
 
@@ -563,18 +563,18 @@ async function handleExport(args) {
     }
 
     // Pedir confirmación
-    Display.warning('⚠️  WARNING: This will display your PRIVATE KEY');
-    Display.dim('Anyone with this key can control your identity and funds.');
-    Display.dim('Only export if you need to backup or migrate to another app.');
+    Display.warning('⚠️  ADVERTENCIA: Esto mostrará tu CLAVE PRIVADA');
+    Display.dim('Cualquiera con esta clave puede controlar tu identidad y fondos.');
+    Display.dim('Solo exporta si necesitas respaldar o migrar a otra app.');
     Display.blank();
 
     const confirmed = await promptConfirmation(
-      'Are you sure you want to continue?',
+      '¿Estás seguro de continuar?',
       'I UNDERSTAND'
     );
 
     if (!confirmed) {
-      Display.info('Export cancelled.');
+      Display.info('Exportación cancelada.');
       return;
     }
 
@@ -583,24 +583,24 @@ async function handleExport(args) {
     const hex = KeyManager.exportPrivateKey('hex');
 
     Display.blank();
-    Display.info('=== PRIVATE KEY BACKUP ===');
+    Display.info('=== RESPALDO DE CLAVE PRIVADA ===');
     Display.blank();
-    Display.success('Your private key (nsec format):');
+    Display.success('Tu clave privada (formato nsec):');
     Display.addLine(nsec, 'warning');
     Display.blank();
-    Display.dim('Hex format (for advanced users):');
+    Display.dim('Formato hex (para usuarios avanzados):');
     Display.addLine(hex, 'dim');
     Display.blank();
-    Display.warning('⚠️  Store this in a SAFE PLACE!');
-    Display.dim('Recommended storage:');
-    Display.dim('  • Password manager (encrypted vault)');
-    Display.dim('  • Hardware wallet (if supported)');
-    Display.dim('  • Paper backup in secure location');
-    Display.dim('  • DO NOT store in plain text files or screenshots!');
+    Display.warning('⚠️  Guarda esto en un LUGAR SEGURO');
+    Display.dim('Almacenamiento recomendado:');
+    Display.dim('  • Gestor de contraseñas (bóveda encriptada)');
+    Display.dim('  • Hardware wallet (si es compatible)');
+    Display.dim('  • Respaldo en papel en ubicación segura');
+    Display.dim('  • NO guardar en archivos de texto plano o capturas');
 
   } catch (error) {
     Logger.error('Export command error:', error);
-    Display.error(`Export failed: ${error.message}`);
+    Display.error(`Error al exportar: ${error.message}`);
   }
 }
 
@@ -614,7 +614,7 @@ async function handleIdentity(args) {
 
     if (!KeyManager.hasIdentity()) {
       Display.error(ERROR_MESSAGES.NO_IDENTITY_FOUND);
-      Display.dim('Use /start to create or import an identity.');
+      Display.dim('Usa /start para crear o importar una identidad.');
       return;
     }
 
@@ -623,33 +623,33 @@ async function handleIdentity(args) {
     const isUnlocked = KeyManager.isUnlocked();
     const tradeIndex = KeyManager.getTradeIndex();
 
-    Display.info('=== IDENTITY INFO ===');
+    Display.info('=== INFORMACIÓN DE IDENTIDAD ===');
     Display.blank();
-    Display.addLine(`Status: ${isUnlocked ? '🟢 Unlocked' : '🔴 Locked'}`, 'normal');
+    Display.addLine(`Estado: ${isUnlocked ? '🟢 Desbloqueado' : '🔴 Bloqueado'}`, 'normal');
     Display.blank();
-    Display.addLine('Public Key (npub):', 'dim');
+    Display.addLine('Clave Pública (npub):', 'dim');
     Display.addLine(npub, 'normal');
     Display.blank();
-    Display.addLine('Public Key (hex):', 'dim');
+    Display.addLine('Clave Pública (hex):', 'dim');
     Display.addLine(hex, 'dim');
     Display.blank();
-    Display.addLine(`Trade Index: ${tradeIndex}`, 'info');
+    Display.addLine(`Índice de Trading: ${tradeIndex}`, 'info');
 
     if (isUnlocked) {
       const tradeKey = KeyManager.getCurrentTradeKey();
       if (tradeKey) {
         Display.blank();
-        Display.addLine('Current Trade Key:', 'dim');
+        Display.addLine('Clave de Trading Actual:', 'dim');
         Display.addLine(tradeKey.publicKey, 'dim');
       }
     }
 
     Display.blank();
-    Display.dim('Use /export to backup your private key.');
+    Display.dim('Usa /export para respaldar tu clave privada.');
 
   } catch (error) {
     Logger.error('Identity command error:', error);
-    Display.error(`Failed to show identity: ${error.message}`);
+    Display.error(`Error al mostrar identidad: ${error.message}`);
   }
 }
 
@@ -660,18 +660,18 @@ async function handleIdentity(args) {
 async function handleLock(args) {
   try {
     if (!KeyManager.isUnlocked()) {
-      Display.warning('Session is already locked.');
+      Display.warning('La sesión ya está bloqueada.');
       return;
     }
 
     KeyManager.lockKeys();
 
     Display.success(SUCCESS_MESSAGES.SESSION_LOCKED);
-    Display.dim('Use /start to unlock again.');
+    Display.dim('Usa /start para desbloquear de nuevo.');
 
   } catch (error) {
     Logger.error('Lock command error:', error);
-    Display.error(`Failed to lock: ${error.message}`);
+    Display.error(`Error al bloquear: ${error.message}`);
   }
 }
 
@@ -683,19 +683,19 @@ async function handleChangePassword(args) {
   try {
     if (!KeyManager.isUnlocked()) {
       Display.error(ERROR_MESSAGES.KEY_LOCKED);
-      Display.dim('Use /start to unlock first.');
+      Display.dim('Usa /start para desbloquear primero.');
       return;
     }
 
-    Display.info('Change encryption password');
-    Display.warning('This will re-encrypt your private key with a new password.');
+    Display.info('Cambiar contraseña de encriptación');
+    Display.warning('Esto re-encriptará tu clave privada con una nueva contraseña.');
     Display.blank();
 
     // Solicitar password actual
-    const oldPassword = await promptPassword('Enter current password:');
+    const oldPassword = await promptPassword('Ingresa contraseña actual:');
 
     if (!oldPassword) {
-      Display.error('Operation cancelled.');
+      Display.error('Operación cancelada.');
       return;
     }
 
@@ -704,7 +704,7 @@ async function handleChangePassword(args) {
     const newPassword = await promptPasswordConfirm();
 
     if (!newPassword) {
-      Display.error('Operation cancelled.');
+      Display.error('Operación cancelada.');
       return;
     }
 
@@ -713,11 +713,11 @@ async function handleChangePassword(args) {
 
     Display.blank();
     Display.success(SUCCESS_MESSAGES.PASSWORD_CHANGED);
-    Display.info('Your private key has been re-encrypted.');
+    Display.info('Tu clave privada ha sido re-encriptada.');
 
   } catch (error) {
     Logger.error('ChangePassword command error:', error);
-    Display.error(`Failed to change password: ${error.message}`);
+    Display.error(`Error al cambiar contraseña: ${error.message}`);
   }
 }
 
@@ -766,28 +766,29 @@ async function handleRelays(args) {
   try {
     const state = RelayManager.getState();
 
-    Display.info('=== RELAY STATUS ===');
+    Display.info('=== ESTADO DE RELAYS ===');
     Display.blank();
-    Display.addLine(`Connected: ${state.connectedCount}/${state.relayCount}`, 'info');
-    Display.addLine(`Subscriptions: ${state.subscriptionCount}`, 'dim');
+    Display.addLine(`Conectados: ${state.connectedCount}/${state.relayCount}`, 'info');
+    Display.addLine(`Suscripciones: ${state.subscriptionCount}`, 'dim');
     Display.blank();
 
     if (state.relays.length === 0) {
-      Display.warning('No relays configured');
+      Display.warning('No hay relays configurados');
       return;
     }
 
     state.relays.forEach(relay => {
       const statusIcon = relay.status === 'connected' ? '🟢' :
                          relay.status === 'connecting' ? '🟡' : '🔴';
-      const statusText = relay.status.toUpperCase();
+      const statusText = relay.status === 'connected' ? 'CONECTADO' :
+                         relay.status === 'connecting' ? 'CONECTANDO' : 'DESCONECTADO';
 
       Display.addLine(`${statusIcon} ${relay.url}`, 'normal');
-      Display.addLine(`   Status: ${statusText}`, 'dim');
+      Display.addLine(`   Estado: ${statusText}`, 'dim');
 
       if (relay.lastConnected) {
         const ago = Math.floor((Date.now() - relay.lastConnected) / 1000);
-        Display.addLine(`   Last connected: ${ago}s ago`, 'dim');
+        Display.addLine(`   Última conexión: hace ${ago}s`, 'dim');
       }
 
       if (relay.lastError) {
@@ -797,14 +798,14 @@ async function handleRelays(args) {
       Display.blank();
     });
 
-    Display.dim('Stats:');
-    Display.dim(`  Events received: ${state.stats.eventsReceived}`);
-    Display.dim(`  Events published: ${state.stats.eventsPublished}`);
-    Display.dim(`  Errors: ${state.stats.errors}`);
+    Display.dim('Estadísticas:');
+    Display.dim(`  Eventos recibidos: ${state.stats.eventsReceived}`);
+    Display.dim(`  Eventos publicados: ${state.stats.eventsPublished}`);
+    Display.dim(`  Errores: ${state.stats.errors}`);
 
   } catch (error) {
     Logger.error('Relays command error:', error);
-    Display.error(`Failed to show relays: ${error.message}`);
+    Display.error(`Error al mostrar relays: ${error.message}`);
   }
 }
 
@@ -816,53 +817,53 @@ async function handleDiscover(args) {
   try {
     if (Discovery.isActive()) {
       Display.warning(ERROR_MESSAGES.DISCOVERY_ALREADY_RUNNING);
-      Display.info('Use /refresh to update orders or /listorders to view them.');
+      Display.info('Usa /refresh para actualizar órdenes o /listorders para verlas.');
       return;
     }
 
-    Display.info('Starting order discovery...');
+    Display.info('Iniciando búsqueda de órdenes...');
     Display.blank();
 
     // Conectar a relays si no está conectado
     if (!RelayManager.isConnected()) {
-      Display.info('Connecting to relays...');
+      Display.info('Conectando a relays...');
 
       try {
         const result = await RelayManager.connect();
-        Display.success(`Connected to ${result.connected}/${result.total} relays`);
+        Display.success(`Conectado a ${result.connected}/${result.total} relays`);
 
         if (result.failed > 0) {
-          Display.warning(`Failed to connect to ${result.failed} relays`);
+          Display.warning(`Error al conectar con ${result.failed} relays`);
         }
 
         Display.blank();
       } catch (error) {
-        Display.error(`Failed to connect to relays: ${error.message}`);
-        Display.dim('Check your internet connection and try again.');
+        Display.error(`Error al conectar con relays: ${error.message}`);
+        Display.dim('Verifica tu conexión a internet e intenta de nuevo.');
         return;
       }
     } else {
       const connectedCount = RelayManager.getConnectedCount();
-      Display.info(`Already connected to ${connectedCount} relays`);
+      Display.info(`Ya conectado a ${connectedCount} relays`);
       Display.blank();
     }
 
     // Iniciar discovery
-    Display.info('Scanning relays for Mostro orders...');
+    Display.info('Escaneando relays en busca de órdenes Mostro...');
 
     await Discovery.startDiscovery();
 
     Display.success(SUCCESS_MESSAGES.DISCOVERY_STARTED);
     Display.blank();
-    Display.dim('Listening for order events...');
-    Display.dim('Orders will appear as they are discovered.');
+    Display.dim('Escuchando eventos de órdenes...');
+    Display.dim('Las órdenes aparecerán conforme se descubran.');
     Display.blank();
-    Display.info('Use /listorders to view discovered orders');
-    Display.dim('Use /refresh to rescan relays');
+    Display.info('Usa /listorders para ver órdenes descubiertas');
+    Display.dim('Usa /refresh para re-escanear relays');
 
   } catch (error) {
     Logger.error('Discover command error:', error);
-    Display.error(`Failed to start discovery: ${error.message}`);
+    Display.error(`Error al iniciar búsqueda: ${error.message}`);
   }
 }
 
@@ -873,11 +874,11 @@ async function handleDiscover(args) {
 async function handleRefresh(args) {
   try {
     if (!Discovery.isActive()) {
-      Display.warning('Discovery not running. Use /discover to start.');
+      Display.warning('Búsqueda no activa. Usa /discover para iniciar.');
       return;
     }
 
-    Display.info('Refreshing orders from relays...');
+    Display.info('Actualizando órdenes desde relays...');
     Display.blank();
 
     const oldStats = Discovery.getStats();
@@ -885,7 +886,7 @@ async function handleRefresh(args) {
     await Discovery.refreshOrders();
 
     // Esperar un momento para que lleguen algunos eventos
-    Display.dim('Scanning relays...');
+    Display.dim('Escaneando relays...');
 
     // Dar tiempo para recibir eventos iniciales (2 segundos)
     await new Promise(resolve => setTimeout(resolve, 2000));
@@ -895,15 +896,15 @@ async function handleRefresh(args) {
     Display.blank();
     Display.success(SUCCESS_MESSAGES.ORDERS_REFRESHED);
     Display.blank();
-    Display.info(`Found ${newStats.total} orders from ${newStats.mostroCount} Mostro instances`);
-    Display.dim(`  Buy orders: ${newStats.buyOrders}`);
-    Display.dim(`  Sell orders: ${newStats.sellOrders}`);
+    Display.info(`Encontradas ${newStats.total} órdenes de ${newStats.mostroCount} instancias Mostro`);
+    Display.dim(`  Órdenes de compra: ${newStats.buyOrders}`);
+    Display.dim(`  Órdenes de venta: ${newStats.sellOrders}`);
     Display.blank();
-    Display.info('Use /listorders to view orders');
+    Display.info('Usa /listorders para ver órdenes');
 
   } catch (error) {
     Logger.error('Refresh command error:', error);
-    Display.error(`Failed to refresh orders: ${error.message}`);
+    Display.error(`Error al actualizar órdenes: ${error.message}`);
   }
 }
 
@@ -915,8 +916,8 @@ async function handleListOrders(args) {
   try {
     // Verificar que discovery esté activo o haya órdenes cacheadas
     if (!Discovery.isActive() && Discovery.getOrderCount() === 0) {
-      Display.warning('No orders available.');
-      Display.info('Use /discover to start scanning for orders.');
+      Display.warning('No hay órdenes disponibles.');
+      Display.info('Usa /discover para comenzar a escanear órdenes.');
       return;
     }
 
@@ -951,9 +952,9 @@ async function handleListOrders(args) {
       Display.warning(ERROR_MESSAGES.NO_ORDERS_FOUND);
 
       if (Object.keys(filters).length > 2) {
-        Display.dim('Try removing filters or use /refresh to update orders.');
+        Display.dim('Intenta remover filtros o usa /refresh para actualizar.');
       } else {
-        Display.dim('Use /discover to start scanning or /refresh to update.');
+        Display.dim('Usa /discover para comenzar a escanear o /refresh para actualizar.');
       }
 
       return;
@@ -971,18 +972,18 @@ async function handleListOrders(args) {
     const mostroCount = Object.keys(groupedOrders).length;
 
     // Header
-    Display.info('=== MOSTRO ORDERS ===');
+    Display.info('=== ÓRDENES DE MOSTRO ===');
     Display.blank();
 
-    let filterText = 'All orders';
+    let filterText = 'Todas las órdenes';
     if (filters.type) {
-      filterText = `${filters.type.toUpperCase()} orders`;
+      filterText = `Órdenes de ${filters.type === 'buy' ? 'COMPRA' : 'VENTA'}`;
     }
     if (filters.fiatCode) {
-      filterText += ` in ${filters.fiatCode}`;
+      filterText += ` en ${filters.fiatCode}`;
     }
 
-    Display.addLine(`${filterText}: ${orders.length} orders from ${mostroCount} Mostro instances`, 'info');
+    Display.addLine(`${filterText}: ${orders.length} órdenes de ${mostroCount} instancias Mostro`, 'info');
     Display.blank();
 
     // Mostrar órdenes agrupadas por Mostro
@@ -1003,7 +1004,7 @@ async function handleListOrders(args) {
       });
 
       if (mostroOrders.length > maxOrdersPerMostro) {
-        Display.dim(`  ... and ${mostroOrders.length - maxOrdersPerMostro} more orders`);
+        Display.dim(`  ... y ${mostroOrders.length - maxOrdersPerMostro} órdenes más`);
       }
 
       Display.blank();
@@ -1011,26 +1012,26 @@ async function handleListOrders(args) {
     });
 
     if (mostroCount > maxMostros) {
-      Display.dim(`... and ${mostroCount - maxMostros} more Mostro instances`);
+      Display.dim(`... y ${mostroCount - maxMostros} instancias Mostro más`);
       Display.blank();
     }
 
     // Footer
-    Display.dim('Legend: 📗 = BUY | 📕 = SELL | 🟢 = Active Mostro');
+    Display.dim('Leyenda: 📗 = COMPRA | 📕 = VENTA | 🟢 = Mostro Activo');
     Display.blank();
-    Display.info('To take an order, use:');
-    Display.dim('  /takebuy <order-id>  - Take a buy order');
-    Display.dim('  /takesell <order-id> - Take a sell order');
+    Display.info('Para tomar una orden, usa:');
+    Display.dim('  /takebuy <order-id>  - Tomar una orden de compra');
+    Display.dim('  /takesell <order-id> - Tomar una orden de venta');
 
     if (!Discovery.isActive()) {
       Display.blank();
-      Display.warning('⚠️  Discovery not running. Orders may be outdated.');
-      Display.dim('Use /discover to start real-time discovery.');
+      Display.warning('⚠️  Búsqueda no activa. Las órdenes pueden estar desactualizadas.');
+      Display.dim('Usa /discover para iniciar búsqueda en tiempo real.');
     }
 
   } catch (error) {
     Logger.error('ListOrders command error:', error);
-    Display.error(`Failed to list orders: ${error.message}`);
+    Display.error(`Error al listar órdenes: ${error.message}`);
   }
 }
 

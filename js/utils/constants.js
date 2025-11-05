@@ -135,45 +135,45 @@ export const CRYPTO_CONFIG = {
 
 // Mensajes de error
 export const ERROR_MESSAGES = {
-  NOSTR_NOT_LOADED: 'Nostr-tools library not loaded yet',
-  NO_PRIVATE_KEY: 'No private key found. Generate or import a key first.',
-  INVALID_COMMAND: 'Invalid command. Type /help for available commands.',
-  RELAY_CONNECTION_FAILED: 'Failed to connect to relay',
-  MESSAGE_SEND_FAILED: 'Failed to send message',
-  INVALID_PARAMETER: 'Invalid parameter provided',
-  COMMAND_NOT_IMPLEMENTED: 'Command not yet implemented',
-  WRONG_PASSWORD: 'Wrong password. Please try again.',
-  KEY_LOCKED: 'Session locked. Use /start to unlock.',
-  INVALID_KEY_FORMAT: 'Invalid key format. Use nsec or hex.',
-  PASSWORD_TOO_SHORT: 'Password must be at least 8 characters.',
-  PASSWORDS_DONT_MATCH: 'Passwords do not match.',
-  DECRYPTION_FAILED: 'Decryption failed. Wrong password or corrupted data.',
-  NO_IDENTITY_FOUND: 'No identity found. Use /start to create one.',
-  IDENTITY_ALREADY_EXISTS: 'Identity already exists. Use /start to unlock or /import to replace.',
-  EXPORT_REQUIRES_UNLOCK: 'You must unlock your session first. Use /start.',
-  RELAY_NOT_CONNECTED: 'Not connected to any relay. Use /discover first.',
-  NO_ORDERS_FOUND: 'No orders found. Try /discover to scan for orders.',
-  DISCOVERY_ALREADY_RUNNING: 'Discovery is already running.',
-  RELAY_CONNECTION_TIMEOUT: 'Relay connection timeout. Check your internet connection.'
+  NOSTR_NOT_LOADED: 'Biblioteca nostr-tools aún no cargada',
+  NO_PRIVATE_KEY: 'No se encontró clave privada. Genera o importa una primero.',
+  INVALID_COMMAND: 'Comando inválido. Escribe /help para ver comandos disponibles.',
+  RELAY_CONNECTION_FAILED: 'Error al conectar con relay',
+  MESSAGE_SEND_FAILED: 'Error al enviar mensaje',
+  INVALID_PARAMETER: 'Parámetro inválido',
+  COMMAND_NOT_IMPLEMENTED: 'Comando aún no implementado',
+  WRONG_PASSWORD: 'Contraseña incorrecta. Intenta de nuevo.',
+  KEY_LOCKED: 'Sesión bloqueada. Usa /start para desbloquear.',
+  INVALID_KEY_FORMAT: 'Formato de clave inválido. Usa nsec o hex.',
+  PASSWORD_TOO_SHORT: 'La contraseña debe tener al menos 8 caracteres.',
+  PASSWORDS_DONT_MATCH: 'Las contraseñas no coinciden.',
+  DECRYPTION_FAILED: 'Error al desencriptar. Contraseña incorrecta o datos corruptos.',
+  NO_IDENTITY_FOUND: 'No se encontró identidad. Usa /start para crear una.',
+  IDENTITY_ALREADY_EXISTS: 'Ya existe una identidad. Usa /start para desbloquear o /import para reemplazar.',
+  EXPORT_REQUIRES_UNLOCK: 'Debes desbloquear tu sesión primero. Usa /start.',
+  RELAY_NOT_CONNECTED: 'No conectado a ningún relay. Usa /discover primero.',
+  NO_ORDERS_FOUND: 'No se encontraron órdenes. Usa /discover para escanear.',
+  DISCOVERY_ALREADY_RUNNING: 'El escaneo ya está en ejecución.',
+  RELAY_CONNECTION_TIMEOUT: 'Timeout de conexión al relay. Verifica tu conexión.'
 };
 
 // Mensajes de éxito
 export const SUCCESS_MESSAGES = {
-  KEY_GENERATED: 'New key pair generated successfully',
-  KEY_IMPORTED: 'Private key imported successfully',
-  RELAY_CONNECTED: 'Connected to relay',
-  MESSAGE_SENT: 'Message sent successfully',
-  COMMAND_EXECUTED: 'Command executed successfully',
-  SESSION_UNLOCKED: 'Session unlocked successfully',
-  SESSION_LOCKED: 'Session locked. Keys cleared from memory.',
-  PASSWORD_CHANGED: 'Password changed successfully',
-  KEY_ENCRYPTED: 'Private key encrypted and stored securely',
-  IDENTITY_CREATED: 'Identity created successfully',
-  RELAY_CONNECTED_SUCCESS: 'Successfully connected to relays',
-  DISCOVERY_STARTED: 'Order discovery started. Scanning relays...',
-  ORDERS_REFRESHED: 'Orders refreshed successfully',
-  RELAY_ADDED: 'Relay added successfully',
-  RELAY_REMOVED: 'Relay removed successfully'
+  KEY_GENERATED: 'Nuevo par de claves generado exitosamente',
+  KEY_IMPORTED: 'Clave privada importada exitosamente',
+  RELAY_CONNECTED: 'Conectado al relay',
+  MESSAGE_SENT: 'Mensaje enviado exitosamente',
+  COMMAND_EXECUTED: 'Comando ejecutado exitosamente',
+  SESSION_UNLOCKED: 'Sesión desbloqueada exitosamente',
+  SESSION_LOCKED: 'Sesión bloqueada. Claves eliminadas de memoria.',
+  PASSWORD_CHANGED: 'Contraseña cambiada exitosamente',
+  KEY_ENCRYPTED: 'Clave privada encriptada y almacenada de forma segura',
+  IDENTITY_CREATED: 'Identidad creada exitosamente',
+  RELAY_CONNECTED_SUCCESS: 'Conectado exitosamente a los relays',
+  DISCOVERY_STARTED: 'Escaneo de órdenes iniciado. Buscando en relays...',
+  ORDERS_REFRESHED: 'Órdenes actualizadas exitosamente',
+  RELAY_ADDED: 'Relay agregado exitosamente',
+  RELAY_REMOVED: 'Relay eliminado exitosamente'
 };
 
 // Mensajes de seguridad (nuevo formato)
@@ -232,92 +232,92 @@ export const COMMANDS = {
 // Información de comandos
 export const COMMAND_INFO = {
   [COMMANDS.HELP]: {
-    description: 'Show available commands',
+    description: 'Mostrar comandos disponibles',
     usage: '/help [command]',
     aliases: ['?', 'h']
   },
   [COMMANDS.CLEAR]: {
-    description: 'Clear terminal output',
+    description: 'Limpiar salida del terminal',
     usage: '/clear',
     aliases: ['cls', 'clean']
   },
   [COMMANDS.THEME]: {
-    description: 'Change terminal theme',
+    description: 'Cambiar tema del terminal',
     usage: '/theme <color>',
     examples: ['/theme amber', '/theme blue', '/theme matrix']
   },
   [COMMANDS.VERSION]: {
-    description: 'Show application version',
+    description: 'Mostrar versión de la aplicación',
     usage: '/version',
     aliases: ['v', 'ver']
   },
   [COMMANDS.STATUS]: {
-    description: 'Show connection status',
+    description: 'Mostrar estado de conexión',
     usage: '/status',
     aliases: ['stat']
   },
   [COMMANDS.START]: {
-    description: 'Generate new Nostr identity for trading',
+    description: 'Generar nueva identidad Nostr para tradear',
     usage: '/start',
     aliases: ['s'],
     examples: ['/start']
   },
   [COMMANDS.LOGIN]: {
-    description: 'Login with existing private key (nsec)',
+    description: 'Iniciar sesión con clave privada existente (nsec)',
     usage: '/login',
     aliases: ['l'],
     examples: ['/login']
   },
   [COMMANDS.IMPORT]: {
-    description: 'Import an existing Nostr private key',
+    description: 'Importar clave privada de Nostr existente',
     usage: '/import',
     aliases: [],
     examples: ['/import']
   },
   [COMMANDS.IDENTITY]: {
-    description: 'Show your identity information',
+    description: 'Mostrar tu información de identidad',
     usage: '/identity',
     aliases: ['id', 'whoami'],
     examples: ['/identity']
   },
   [COMMANDS.EXPORT]: {
-    description: 'Export your private key for backup',
+    description: 'Exportar tu clave privada para respaldo',
     usage: '/export',
     aliases: ['backup'],
     examples: ['/export']
   },
   [COMMANDS.LOCK]: {
-    description: 'Lock session and clear keys from memory',
+    description: 'Bloquear sesión y limpiar claves de memoria',
     usage: '/lock',
     aliases: ['logout'],
     examples: ['/lock']
   },
   [COMMANDS.CHANGEPASS]: {
-    description: 'Change encryption password',
+    description: 'Cambiar contraseña de encriptación',
     usage: '/changepass',
     aliases: ['passwd'],
     examples: ['/changepass']
   },
   [COMMANDS.RELAYS]: {
-    description: 'Show relay connection status',
+    description: 'Mostrar estado de conexión a relays',
     usage: '/relays',
     aliases: ['relay'],
     examples: ['/relays']
   },
   [COMMANDS.DISCOVER]: {
-    description: 'Start discovering orders from relays',
+    description: 'Iniciar búsqueda de órdenes en relays',
     usage: '/discover',
     aliases: ['scan'],
     examples: ['/discover']
   },
   [COMMANDS.REFRESH]: {
-    description: 'Refresh orders from relays',
+    description: 'Actualizar órdenes desde relays',
     usage: '/refresh',
     aliases: ['reload'],
     examples: ['/refresh']
   },
   [COMMANDS.LISTORDERS]: {
-    description: 'List all discovered orders grouped by Mostro',
+    description: 'Listar todas las órdenes descubiertas agrupadas por Mostro',
     usage: '/listorders [buy|sell] [fiatCode]',
     aliases: ['orders', 'list'],
     examples: ['/listorders', '/listorders buy', '/listorders sell USD']

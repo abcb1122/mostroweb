@@ -146,14 +146,14 @@ export function showWelcome() {
   addLine('  ██║ ╚═╝ ██║╚██████╔╝███████║   ██║   ██║  ██║╚██████╔╝', 'success');
   addLine('  ╚═╝     ╚═╝ ╚═════╝ ╚══════╝   ╚═╝   ╚═╝  ╚═╝ ╚═════╝ ', 'success');
   blank();
-  addLine('          P2P BITCOIN TRADING TERMINAL', 'info');
+  addLine('          TERMINAL DE TRADING P2P DE BITCOIN', 'info');
   blank();
   blank();
   addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'dim');
-  addLine('  GETTING STARTED:', 'info');
+  addLine('  COMENZAR:', 'info');
   blank();
-  addLine('    /start    - Generate new Nostr identity for trading', 'normal');
-  addLine('    /login    - Login with existing private key (nsec)', 'normal');
+  addLine('    /start    - Generar nueva identidad Nostr para tradear', 'normal');
+  addLine('    /login    - Iniciar sesión con clave privada (nsec)', 'normal');
   blank();
   addLine('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'dim');
   blank();
@@ -166,61 +166,61 @@ export function showHelp() {
   addHTML(`
     <div class="help-table">
       <div class="help-section">
-        <div class="help-section-title">AVAILABLE COMMANDS</div>
+        <div class="help-section-title">COMANDOS DISPONIBLES</div>
 
         <div class="help-command">
           <div class="help-command-name">/help [command]</div>
-          <div class="help-command-desc">Show this help or help for specific command</div>
+          <div class="help-command-desc">Mostrar esta ayuda o ayuda de comando específico</div>
         </div>
 
         <div class="help-command">
           <div class="help-command-name">/clear</div>
-          <div class="help-command-desc">Clear terminal output</div>
+          <div class="help-command-desc">Limpiar salida del terminal</div>
         </div>
 
         <div class="help-command">
           <div class="help-command-name">/theme &lt;color&gt;</div>
-          <div class="help-command-desc">Change terminal theme (green, amber, blue, matrix, dos, hacker, etc)</div>
+          <div class="help-command-desc">Cambiar tema del terminal (green, amber, blue, matrix, dos, hacker, etc)</div>
         </div>
 
         <div class="help-command">
           <div class="help-command-name">/version</div>
-          <div class="help-command-desc">Show application version</div>
+          <div class="help-command-desc">Mostrar versión de la aplicación</div>
         </div>
 
         <div class="help-command">
           <div class="help-command-name">/status</div>
-          <div class="help-command-desc">Show connection and system status</div>
+          <div class="help-command-desc">Mostrar estado de conexión y sistema</div>
         </div>
       </div>
 
       <div class="help-section">
-        <div class="help-section-title">COMING SOON (PHASE 2+)</div>
+        <div class="help-section-title">PRÓXIMAMENTE (FASE 2+)</div>
 
         <div class="help-command">
           <div class="help-command-name">/start</div>
-          <div class="help-command-desc">Initialize session with Mostro</div>
+          <div class="help-command-desc">Inicializar sesión con Mostro</div>
         </div>
 
         <div class="help-command">
           <div class="help-command-name">/newsell</div>
-          <div class="help-command-desc">Create new sell order</div>
+          <div class="help-command-desc">Crear nueva orden de venta</div>
         </div>
 
         <div class="help-command">
           <div class="help-command-name">/newbuy</div>
-          <div class="help-command-desc">Create new buy order</div>
+          <div class="help-command-desc">Crear nueva orden de compra</div>
         </div>
 
         <div class="help-command">
           <div class="help-command-name">/listorders</div>
-          <div class="help-command-desc">List available orders</div>
+          <div class="help-command-desc">Listar órdenes disponibles</div>
         </div>
       </div>
     </div>
   `);
   blank();
-  dim('Tip: You can use arrow keys (↑ ↓) to navigate command history');
+  dim('Tip: Usa las flechas (↑ ↓) para navegar el historial de comandos');
 }
 
 /**
@@ -231,13 +231,13 @@ export async function showVersion() {
 
   addHTML(`
     <div class="box">
-      <div class="box-title">${APP_NAME} Version Information</div>
+      <div class="box-title">Información de Versión de ${APP_NAME}</div>
       <div class="box-content">
-        Version: <strong>${APP_VERSION}</strong><br>
-        Build Date: ${ENVIRONMENT.buildDate}<br>
-        Environment: ${ENVIRONMENT.isDevelopment ? 'Development' : 'Production'}<br>
-        Protocol: Mostro P2P v1<br>
-        Network: Testnet (for now)
+        Versión: <strong>${APP_VERSION}</strong><br>
+        Fecha de compilación: ${ENVIRONMENT.buildDate}<br>
+        Entorno: ${ENVIRONMENT.isDevelopment ? 'Desarrollo' : 'Producción'}<br>
+        Protocolo: Mostro P2P v1<br>
+        Red: Testnet (por ahora)
       </div>
     </div>
   `);
@@ -252,24 +252,24 @@ export async function showStatus() {
 
   addHTML(`
     <div class="box">
-      <div class="box-title">System Status</div>
+      <div class="box-title">Estado del Sistema</div>
       <div class="box-content">
-        <strong>Connection:</strong><br>
-        • Relays: <span class="badge error">OFFLINE</span> (Phase 2)<br>
+        <strong>Conexión:</strong><br>
+        • Relays: <span class="badge error">DESCONECTADO</span> (Fase 2)<br>
         <br>
-        <strong>Storage:</strong><br>
-        • Keys: ${info.keys}<br>
-        • Size: ${info.sizeFormatted}<br>
-        • Identity Key: ${info.hasIdentityKey ? '✓' : '✗'}<br>
-        • Trade Key: ${info.hasTradeKey ? '✓' : '✗'}<br>
-        • Trade Index: ${info.tradeIndex}<br>
-        • Command History: ${info.commandHistorySize} commands<br>
-        • Cached Orders: ${info.ordersCount}<br>
+        <strong>Almacenamiento:</strong><br>
+        • Claves: ${info.keys}<br>
+        • Tamaño: ${info.sizeFormatted}<br>
+        • Clave de Identidad: ${info.hasIdentityKey ? '✓' : '✗'}<br>
+        • Clave de Trading: ${info.hasTradeKey ? '✓' : '✗'}<br>
+        • Índice de Trading: ${info.tradeIndex}<br>
+        • Historial de Comandos: ${info.commandHistorySize} comandos<br>
+        • Órdenes en Caché: ${info.ordersCount}<br>
         <br>
-        <strong>Libraries:</strong><br>
-        • nostr-tools: ${typeof window.nostrTools !== 'undefined' ? '✓ Loaded' : '✗ Not loaded'}<br>
-        • uuid: ${typeof uuid !== 'undefined' ? '✓ Loaded' : '✗ Not loaded'}<br>
-        • CryptoJS: ${typeof CryptoJS !== 'undefined' ? '✓ Loaded' : '✗ Not loaded'}<br>
+        <strong>Bibliotecas:</strong><br>
+        • nostr-tools: ${typeof window.nostrTools !== 'undefined' ? '✓ Cargado' : '✗ No cargado'}<br>
+        • uuid: ${typeof uuid !== 'undefined' ? '✓ Cargado' : '✗ No cargado'}<br>
+        • CryptoJS: ${typeof CryptoJS !== 'undefined' ? '✓ Cargado' : '✗ No cargado'}<br>
       </div>
     </div>
   `);
