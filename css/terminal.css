@@ -263,8 +263,8 @@ body {
   padding: var(--spacing-xs) var(--spacing-md);
   background: var(--bg-secondary);
   border-top: 1px solid var(--border-color);
-  font-size: 12px;
-  height: 30px;
+  font-size: 14px;              /* Aumentado de 12px a 14px */
+  height: 32px;                 /* Aumentado de 30px a 32px */
   flex-shrink: 0;
 }
 
@@ -276,7 +276,7 @@ body {
 }
 
 .status-icon {
-  font-size: 10px;
+  font-size: 12px;              /* Aumentado de 10px a 12px */
 }
 
 .status-relays.connected .status-icon {
@@ -367,6 +367,11 @@ body {
     padding: var(--spacing-sm);
   }
 
+  /* Statusbar más legible en tablet */
+  .terminal-statusbar {
+    font-size: 14px;
+  }
+
   .status-help {
     display: none;
   }
@@ -412,6 +417,12 @@ body {
   .terminal-output {
     padding: var(--spacing-sm);
     text-shadow: none;            /* Remover glow effect */
+  }
+
+  /* Statusbar más legible en móvil */
+  .terminal-statusbar {
+    font-size: 15px;              /* Aumentado para móvil */
+    height: 36px;                 /* Más alto para acomodar texto */
   }
 
   /* Remover glow de elementos individuales */

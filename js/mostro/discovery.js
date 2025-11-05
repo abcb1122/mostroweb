@@ -483,7 +483,7 @@ class Discovery {
     if (statusElement) {
       const count = this.getOrderCount();
       const mostroCount = this.getMostroCount();
-      statusElement.textContent = `Orders: ${count} | Mostros: ${mostroCount}`;
+      statusElement.textContent = `Órdenes: ${count} | Mostros: ${mostroCount}`;
     }
   }
 

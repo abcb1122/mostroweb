@@ -349,7 +349,7 @@ export function setRelaysConnecting() {
  * Actualiza contador de órdenes
  */
 export function updateOrdersCount(count) {
-  updateStatus('orders', `Orders: ${count}`);
+  updateStatus('orders', `Órdenes: ${count}`);
 }
 
 /**
