@@ -114,5 +114,24 @@
 
   <!-- Main -->
   <script type="module" src="js/main.js"></script>
+<script>
+function copyToClipboard(elementId) {
+  const element = document.getElementById(elementId);
+  element.select();
+  element.setSelectionRange(0, 99999);
+  navigator.clipboard.writeText(element.value)
+    .then(() => {
+      const btn = element.nextElementSibling;
+      const originalText = btn.textContent;
+      btn.textContent = '¡Copiado!';
+      setTimeout(() => {
+        btn.textContent = originalText;
+      }, 2000);
+    })
+    .catch(err => {
+      console.error('Error al copiar: ', err);
+    });
+}
+</script>
 </body>
 </html>

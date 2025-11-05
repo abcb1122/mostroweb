@@ -500,3 +500,57 @@
   user-select: text !important;
   cursor: text !important;
 }
+
+/* Estilos para campos de clave copiables */
+.key-container {
+  margin: 15px 0;
+}
+
+.key-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #333;
+}
+
+.key-field {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.key-input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #f8f9fa;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  user-select: all;
+  cursor: text;
+}
+
+.copy-btn {
+  padding: 10px 16px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.copy-btn:hover {
+  background: #218838;
+}
+
+/* Para hacer el texto seleccionable incluso en elementos de display normal */
+.output-line {
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+}
