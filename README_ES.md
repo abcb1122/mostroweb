@@ -53,16 +53,27 @@
   - Cache local para carga rápida
   - Agrupación por daemon Mostro
 
-- ✅ **Trading Básico**
+- ✅ **Trading Completo**
   - Crear órdenes de compra/venta
   - Tomar órdenes existentes
   - Cancelar órdenes pendientes
+  - **Flujo completo de Lightning invoices**
+  - Añadir invoice para recibir pago (/addinvoice)
+  - Notificar envío de fiat (/fiatsent)
+  - Liberar fondos Bitcoin (/release)
+  - Seguimiento de estado en tiempo real
+
+- ✅ **Sistema de Respuestas**
+  - 34+ handlers de respuesta del daemon Mostro
+  - Desencriptación completa NIP-59 (Gift Wrap)
+  - Verificación de firmas Schnorr
+  - Actualizaciones de estado automáticas
 
 - ⚠️ **En Desarrollo**
-  - Flujo completo de Lightning invoices
   - Sistema de disputas
   - Calificaciones de usuarios
   - Mensajería directa entre traders
+  - Exportación de historial de trades
 
 ### Protocolo
 
@@ -73,11 +84,28 @@
 
 ### UI/UX
 
-- 🎨 **9 Temas visuales**: Green, Amber, Blue, Matrix, DOS, Hacker, etc.
-- ⌨️ **Comandos de terminal**: Estilo Unix con autocompletado
-- 📜 **Historial de comandos**: Navegación con flechas ↑/↓
-- 🔔 **Notificaciones en tiempo real**: Estados de relay y órdenes
-- 📱 **Responsive**: Funciona en desktop y mobile
+- 👋 **Wizard de Onboarding**: Guía interactiva automática para nuevos usuarios
+  - Explica Nostr, Mostro y Lightning en términos simples
+  - Walkthrough completo del flujo de trading
+  - Consejos de seguridad y mejores prácticas
+  - Comando `/tutorial` para ver guía en cualquier momento
+
+- 🔔 **Notificaciones Visuales Mejoradas**
+  - Mensajes con bordes y emojis contextuales
+  - Sugerencias accionables en errores
+  - Historial de notificaciones (/history)
+  - Indicadores de estado con emojis
+
+- 📊 **Comandos de Utilidad**
+  - `/history`: Ver notificaciones recientes
+  - `/mystats`: Estadísticas de trading y órdenes activas
+  - `/tutorial`: Guía completa paso a paso
+
+- 🎨 **Temas y Terminal**
+  - 9 temas visuales: Green, Amber, Blue, Matrix, DOS, Hacker, etc.
+  - Comandos estilo Unix con autocompletado
+  - Historial de comandos (↑/↓)
+  - Responsive: Desktop y mobile
 
 ---
 
@@ -106,21 +134,60 @@ Abre tu navegador en [http://localhost:3000](http://localhost:3000)
 
 ### Primeros Pasos
 
+🎉 **¡La primera vez que abras MostroWeb verás un wizard de onboarding automático!** Este te guiará paso a paso por los conceptos básicos y el flujo de trading.
+
 ```bash
-# 1. Generar identidad Nostr
+# Si saltaste el wizard, puedes verlo en cualquier momento con:
+/tutorial
+
+# 1. Generar identidad Nostr (si no tienes una)
 /start
 
-# 2. Conectar a relays y descubrir órdenes
+# 2. O importar identidad existente
+/login
+
+# 3. Conectar a relays y descubrir órdenes
 /discover
 
-# 3. Listar órdenes disponibles
+# 4. Listar órdenes disponibles
 /listorders
 
-# 4. Crear una orden de compra
+# 5. Crear una orden de compra
 /neworder buy 100 USD Strike
 
-# 5. Ver ayuda completa
+# 6. Tomar una orden de venta (comprar Bitcoin)
+/takesell <order-id>
+
+# 7. Ver tus estadísticas y órdenes activas
+/mystats
+
+# 8. Ver historial de notificaciones
+/history
+
+# 9. Ver ayuda completa
 /help
+```
+
+### Flujo Completo de un Trade
+
+```bash
+# COMPRADOR (compras Bitcoin):
+1. /discover                      # Buscar órdenes
+2. /takesell <order-id>          # Tomar orden de venta
+3. /addinvoice <id> <invoice>    # Añadir tu Lightning invoice
+4. Esperar que vendedor bloquee fondos en escrow
+5. /fiatsent <order-id>          # Confirmar que enviaste fiat
+6. Esperar que vendedor libere Bitcoin
+7. ✅ ¡Recibes Bitcoin en tu wallet Lightning!
+
+# VENDEDOR (vendes Bitcoin):
+1. /neworder sell 100 USD Bizum  # Crear orden de venta
+2. Esperar que comprador tome orden
+3. Pagar hold invoice generada (fondos en escrow)
+4. Esperar confirmación de fiat del comprador
+5. Verificar que recibiste el pago fiat
+6. /release <order-id>           # Liberar Bitcoin
+7. ✅ Trade completado!
 ```
 
 ---
