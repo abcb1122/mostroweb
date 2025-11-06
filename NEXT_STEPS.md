@@ -11,7 +11,7 @@
 - Mostro es un **protocolo descentralizado**, NO un servicio centralizado
 - Múltiples Mostro daemons ejecutándose independientemente
 - Cada Mostro tiene su propia public key (NO hay pubkey fija global)
-- Órdenes son eventos públicos descubribles (Kind 34242)
+- Órdenes son eventos públicos descubribles (Kind 38383)
 - MostroWeb descubre órdenes dinámicamente buscando en relays
 
 ## Próximos Pasos Críticos
@@ -51,7 +51,7 @@
 
 #### 5. Descubrimiento de Órdenes (CRÍTICO)
 **Módulo:** `js/mostro/discovery.js`
-- [ ] Buscar eventos Kind 34242 en relays (órdenes públicas)
+- [ ] Buscar eventos Kind 38383 en relays (órdenes públicas)
 - [ ] Filtrar por tags (#y=mostrop2p, #z=order)
 - [ ] Extraer pubkey de Mostro de cada evento
 - [ ] Cachear lista de Mostros descubiertos
@@ -81,7 +81,7 @@
 1. **CREAR** `TECHNICAL_QUESTIONS.md` para validar con equipo Mostro
 2. **INICIAR** estructura básica del proyecto (HTML/CSS/JS)
 3. **IMPLEMENTAR** keyManager.js (gestión de claves local)
-4. **PROTOTIPAR** descubrimiento de órdenes (buscar Kind 34242 en relays)
+4. **PROTOTIPAR** descubrimiento de órdenes (buscar Kind 38383 en relays)
 5. **VALIDAR** extracción dinámica de pubkey de Mostros
 
 ## Decisiones Técnicas Inmediatas
@@ -101,7 +101,7 @@
 ## Métricas de Éxito Sprint 1
 - [ ] Usuario puede generar/importar private key
 - [ ] Conexión estable a 3+ relays Nostr públicos
-- [ ] Descubrimiento de órdenes públicas (Kind 34242) funcionando
+- [ ] Descubrimiento de órdenes públicas (Kind 38383) funcionando
 - [ ] Extracción correcta de pubkey de Mostro de cada orden
 - [ ] Interfaz terminal funcional con listado de órdenes
 - [ ] Private key almacenada de forma segura

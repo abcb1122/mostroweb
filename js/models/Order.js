@@ -3,7 +3,7 @@
  * Modelo de datos para órdenes Mostro
  *
  * Representa una orden pública descubierta en la red Nostr
- * Parsea eventos Kind 34242 (NIP-33 Replaceable events)
+ * Parsea eventos Kind 38383 (NIP-69 P2P Order events)
  */
 
 import { ORDER_STATUS, ORDER_TYPES } from '../utils/constants.js';
@@ -15,7 +15,7 @@ export default class Order {
    * @param {Object} data - Datos de la orden (objeto plano o con evento Nostr)
    */
   constructor(data) {
-    // Evento Nostr original (Kind 34242)
+    // Evento Nostr original (Kind 38383)
     this.event = data.event || null;
 
     // Identificador único del evento
@@ -24,8 +24,8 @@ export default class Order {
     // Pubkey del Mostro daemon que publicó esta orden
     this.mostroPubkey = data.mostroPubkey || data.event?.pubkey;
 
-    // Kind del evento (debe ser 34242)
-    this.kind = data.kind || data.event?.kind || 34242;
+    // Kind del evento (debe ser 38383)
+    this.kind = data.kind || data.event?.kind || 38383;
 
     // Status de la orden
     this.status = data.status || ORDER_STATUS.PENDING;
@@ -57,58 +57,60 @@ export default class Order {
   }
 
   /**
-   * Crea una instancia de Order desde un evento Nostr Kind 34242
+   * Crea una instancia de Order desde un evento Nostr Kind 38383 (NIP-69)
    * @param {Object} event - Evento Nostr
    * @returns {Order} Instancia de Order
    */
   static fromNostrEvent(event) {
     try {
       // Validar que sea el kind correcto
-      if (event.kind !== 34242) {
-        throw new Error(`Invalid event kind: ${event.kind}. Expected 34242`);
+      if (event.kind !== 38383) {
+        throw new Error(`Invalid event kind: ${event.kind}. Expected 38383 (NIP-69)`);
       }
 
-      // El contenido del evento Kind 34242 puede estar en formato JSON
+      // NIP-69: El contenido debe estar vacío, todos los datos en tags
+      // Parseamos content solo para compatibilidad con eventos antiguos
       let content = {};
 
-      try {
-        // Intentar parsear como JSON
-        if (event.content && event.content.trim() !== '') {
+      if (event.content && event.content.trim() !== '') {
+        Logger.warn('Order: NIP-69 violation - content should be empty');
+        try {
           content = JSON.parse(event.content);
+        } catch (parseError) {
+          Logger.debug('Order: Content is not valid JSON, ignoring');
         }
-      } catch (parseError) {
-        // Si no es JSON válido, el contenido puede estar vacío
-        // y toda la info está en los tags
-        Logger.debug('Order: Content is not JSON, using tags only');
       }
 
-      // Extraer tags relevantes
+      // Extraer tags NIP-69 (todos los datos deben estar aquí)
       const tags = event.tags || [];
 
-      // Tag 'y' debe ser "mostrop2p"
-      const yTag = tags.find(t => t[0] === 'y')?.[1];
+      // Tags requeridos NIP-69
+      const dTag = tags.find(t => t[0] === 'd')?.[1];     // Order ID único
+      const kTag = tags.find(t => t[0] === 'k')?.[1];     // buy/sell
+      const fTag = tags.find(t => t[0] === 'f')?.[1];     // Fiat currency (ISO 4217)
+      const sTag = tags.find(t => t[0] === 's')?.[1];     // Status
+      const amtTag = tags.find(t => t[0] === 'amt')?.[1]; // Satoshis amount
+      const faTag = tags.find(t => t[0] === 'fa')?.[1];   // Fiat amount
+      const pmTag = tags.find(t => t[0] === 'pm')?.[1];   // Payment method
+      const premiumTag = tags.find(t => t[0] === 'premium')?.[1]; // Premium %
+      const expirationTag = tags.find(t => t[0] === 'expiration')?.[1]; // Expiration timestamp
+      const networkTag = tags.find(t => t[0] === 'network')?.[1]; // mainnet/testnet/signet
+      const layerTag = tags.find(t => t[0] === 'layer')?.[1];     // onchain/lightning/liquid
 
-      // Tag 'z' debe ser "order"
-      const zTag = tags.find(t => t[0] === 'z')?.[1];
+      // Tags de identificación
+      const yTag = tags.find(t => t[0] === 'y')?.[1];     // "mostrop2p"
+      const zTag = tags.find(t => t[0] === 'z')?.[1];     // "order"
 
-      // Tag 'd' es el identificador único (usado en replaceable events)
-      const dTag = tags.find(t => t[0] === 'd')?.[1];
-
-      // Tag 's' puede contener el status
-      const sTag = tags.find(t => t[0] === 's')?.[1];
-
-      // Tag 'k' puede contener el kind/type (buy/sell)
-      const kTag = tags.find(t => t[0] === 'k')?.[1];
-
-      // Tag 'f' puede contener fiat code
-      const fTag = tags.find(t => t[0] === 'f')?.[1];
-
-      // Tag 'pm' puede contener payment method
-      const pmTag = tags.find(t => t[0] === 'pm')?.[1];
+      // Tags opcionales
+      const sourceTag = tags.find(t => t[0] === 'source')?.[1];  // URL referencia
+      const ratingTag = tags.find(t => t[0] === 'rating')?.[1];  // Rating info
+      const nameTag = tags.find(t => t[0] === 'name')?.[1];      // Maker name
+      const geoTag = tags.find(t => t[0] === 'g')?.[1];          // Geohash
+      const bondTag = tags.find(t => t[0] === 'bond')?.[1];      // Bond amount
 
       // Determinar tipo de orden (buy/sell)
-      // Puede venir en content.kind, content.type, tag 'k', o inferirse
-      let orderType = content.kind || content.type || kTag;
+      // NIP-69: debe venir en tag 'k', pero soportamos content para retrocompatibilidad
+      let orderType = kTag || content.kind || content.type;
 
       // Normalizar a 'buy' o 'sell'
       if (orderType) {
@@ -119,31 +121,94 @@ export default class Order {
         }
       }
 
-      // Construir objeto Order
+      // Parsear fiat amount (puede incluir rango min-max)
+      let fiatAmount = null;
+      let minAmount = null;
+      let maxAmount = null;
+
+      if (faTag) {
+        // NIP-69: fa tag puede contener rango "100-500" o valor único "100"
+        const faStr = String(faTag);
+        if (faStr.includes('-')) {
+          const [min, max] = faStr.split('-').map(s => parseFloat(s.trim()));
+          minAmount = min;
+          maxAmount = max;
+        } else {
+          fiatAmount = parseFloat(faStr);
+        }
+      } else if (content.fiat_amount) {
+        // Retrocompatibilidad con content
+        fiatAmount = content.fiat_amount;
+        minAmount = content.min_amount || null;
+        maxAmount = content.max_amount || null;
+      }
+
+      // Parsear premium (convertir a número)
+      let premium = 0;
+      if (premiumTag) {
+        premium = parseFloat(premiumTag) || 0;
+      } else if (content.premium) {
+        premium = content.premium;
+      }
+
+      // Parsear amounts en satoshis
+      let amountSats = null;
+      if (amtTag) {
+        amountSats = parseInt(amtTag, 10) || null;
+      } else if (content.amount) {
+        amountSats = content.amount;
+      }
+
+      // Parsear expiration (Unix timestamp)
+      let expiresAt = null;
+      if (expirationTag) {
+        expiresAt = parseInt(expirationTag, 10) * 1000; // Convertir a ms
+      } else if (content.expires_at) {
+        expiresAt = content.expires_at * 1000;
+      }
+
+      // Construir objeto Order con datos NIP-69
       return new Order({
         event,
         id: event.id,
         mostroPubkey: event.pubkey,
         kind: event.kind,
-        status: content.status || sTag || ORDER_STATUS.PENDING,
+        status: sTag || content.status || ORDER_STATUS.PENDING,
         type: orderType,
-        fiatCode: content.fiat_code || fTag,
-        fiatAmount: content.fiat_amount || null,
-        minAmount: content.min_amount || null,
-        maxAmount: content.max_amount || null,
-        paymentMethod: content.payment_method || pmTag,
-        premium: content.premium || 0,
-        amountSats: content.amount || null,
+        fiatCode: fTag || content.fiat_code,
+        fiatAmount,
+        minAmount,
+        maxAmount,
+        paymentMethod: pmTag || content.payment_method,
+        premium,
+        amountSats,
         createdAt: event.created_at * 1000, // Convertir Unix timestamp a ms
-        expiresAt: content.expires_at ? content.expires_at * 1000 : null,
+        expiresAt,
         metadata: {
-          yTag,
-          zTag,
+          // Tags requeridos
           dTag,
-          sTag,
           kTag,
           fTag,
+          sTag,
+          amtTag,
+          faTag,
           pmTag,
+          premiumTag,
+          expirationTag,
+          networkTag,
+          layerTag,
+          // Tags de identificación
+          yTag,
+          zTag,
+          // Tags opcionales
+          sourceTag,
+          ratingTag,
+          nameTag,
+          geoTag,
+          bondTag,
+          // Datos adicionales
+          network: networkTag,
+          layer: layerTag,
           rawContent: event.content
         }
       });
@@ -162,7 +227,7 @@ export default class Order {
     const hasBasicFields = !!(
       this.id &&
       this.mostroPubkey &&
-      this.kind === 34242
+      this.kind === 38383
     );
 
     // Validar tipo si está presente

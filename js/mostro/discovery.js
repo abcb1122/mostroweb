@@ -2,7 +2,7 @@
  * discovery.js
  * Descubre órdenes públicas de Mostro en los relays Nostr
  *
- * Busca eventos Kind 34242 (NIP-33 Replaceable events) con tag #y = "mostrop2p"
+ * Busca eventos Kind 38383 (NIP-69 P2P Order events) con tag #y = "mostrop2p"
  * Agrupa órdenes por pubkey del Mostro daemon que las publicó
  * Cachea resultados en LocalStorage para carga rápida
  */
@@ -144,10 +144,10 @@ class Discovery {
       }
 
       // Crear filtro para órdenes públicas Mostro
-      // Kind 34242: NIP-33 Replaceable events
+      // Kind 38383: NIP-69 P2P Order events
       // Tag y: "mostrop2p" - Identificador del marketplace Mostro
       const filter = {
-        kinds: [NOSTR_KINDS.REPLACEABLE], // 34242
+        kinds: [NOSTR_KINDS.P2P_ORDER], // 38383
         '#y': [MOSTRO_TAGS.MARKETPLACE],   // "mostrop2p"
         limit: 500 // Últimas 500 órdenes
       };
@@ -182,7 +182,7 @@ class Discovery {
 
   /**
    * Handler para eventos de órdenes recibidos desde relays
-   * @param {Object} event - Evento Nostr Kind 34242
+   * @param {Object} event - Evento Nostr Kind 38383 (NIP-69)
    */
   handleOrderEvent(event) {
     try {

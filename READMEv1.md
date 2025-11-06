@@ -69,7 +69,7 @@ Crear un **cliente web frontend** que proporcione una interfaz gráfica minimali
 │  - relay.snort.social                                    │
 └────┬─────────────────────────────────────────────────────┘
      │
-     │ Eventos Públicos (Kind 34242)  │  Mensajes Privados
+     │ Eventos Públicos (Kind 38383)  │  Mensajes Privados
      │ Órdenes descubribles           │  (Kind 1059 - GiftWrap)
      │                                 │
      ├─────────────────────────────────┴──────────────────┐
@@ -85,7 +85,7 @@ Crear un **cliente web frontend** que proporcione una interfaz gráfica minimali
 
 ARQUITECTURA DESCENTRALIZADA:
 - Múltiples Mostro daemons ejecutándose independientemente
-- Cada uno publica órdenes como eventos públicos (Kind 34242)
+- Cada uno publica órdenes como eventos públicos (Kind 38383)
 - MostroWeb descubre órdenes dinámicamente buscando en relays
 - Usuario puede interactuar con cualquier Mostro instance
 - NO hay "Mostro central" - es un protocolo P2P abierto
@@ -186,7 +186,7 @@ Todos los mensajes a Mostro siguen este formato:
 }
 ```
 
-#### B. Replaceable Events (Kind 34242 - NIP-33)
+#### B. Replaceable Events (Kind 38383 - NIP-33)
 **Uso:** Publicación de órdenes P2P (PÚBLICAS y descubribles)
 
 **Características:**
@@ -200,7 +200,7 @@ Todos los mensajes a Mostro siguen este formato:
 ```javascript
 // Filtro para descubrir órdenes de TODOS los Mostros
 {
-  kinds: [34242],
+  kinds: [38383],
   "#y": ["mostrop2p"],  // Marketplace identifier
   "#z": ["order"],       // Event type
   "#s": ["pending"]      // Status filter
@@ -295,7 +295,7 @@ Todos los mensajes a Mostro siguen este formato:
      │                    │    (GiftWrap)       │                     │
      │                    │                     │                     │
      │                    │                     │ 5. Publica Order    │
-     │                    │                     │    (Kind 34242)     │
+     │                    │                     │    (Kind 38383)     │
      │                    │                     │────────────────────>│
      │                    │                     │                     │
      │                    │ 6. Respuesta:       │                     │
@@ -857,7 +857,7 @@ const MOSTRO_PUBKEY = "npub1..."; // NO EXISTE
 // ✅ CORRECTO: Extraer pubkey del evento de orden
 async function discoverOrders() {
   const orderEvents = await pool.list(relays, [{
-    kinds: [34242],
+    kinds: [38383],
     "#y": ["mostrop2p"],
     "#z": ["order"]
   }]);

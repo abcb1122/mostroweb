@@ -2064,7 +2064,7 @@ Una vez completado keyManager.js, el siguiente módulo lógico sería:
 
 **1. relayManager.js** (Issue #2 continuación):
 - Conectar a relays Nostr
-- Subscribe a eventos tipo 34242 (órdenes Mostro)
+- Subscribe a eventos tipo 38383 (órdenes Mostro)
 - Publicar eventos Gift Wrap (NIP-59)
 - Manejo de reconexiones
 

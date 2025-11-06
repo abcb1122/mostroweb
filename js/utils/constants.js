@@ -20,7 +20,7 @@ export const DEFAULT_RELAYS = [
 export const NOSTR_KINDS = {
   GIFT_WRAP: 1059,      // NIP-59 - Mensajes privados encriptados
   SEAL: 13,             // NIP-59 - Seal event interno
-  REPLACEABLE: 34242,   // NIP-33 - Órdenes públicas Mostro
+  P2P_ORDER: 38383,     // NIP-69 - P2P Order events (Mostro protocol)
   DIRECT_MESSAGE: 4     // NIP-04 - Mensajes directos (legacy)
 };
 
