@@ -240,6 +240,10 @@ export const COMMANDS = {
   MYSTATS: '/mystats',
   SHOWQR: '/showqr',
 
+  // Testing & Diagnostics
+  TESTCONNECTION: '/testconnection',
+  TESTINGGUIDE: '/testingguide',
+
   // Deprecated/Alias (usar /neworder)
   RESTORE: '/restore',
   NEWSELL: '/newsell',
@@ -274,9 +278,9 @@ export const COMMAND_INFO = {
     aliases: ['v', 'ver']
   },
   [COMMANDS.STATUS]: {
-    description: 'Mostrar estado de conexión',
+    description: 'Mostrar estado completo del sistema con métricas',
     usage: '/status',
-    aliases: ['stat']
+    aliases: ['stat', 'stats']
   },
   [COMMANDS.START]: {
     description: 'Generar nueva identidad Nostr para tradear',
@@ -398,6 +402,18 @@ export const COMMAND_INFO = {
     description: 'Mostrar código QR para Lightning invoice o dirección',
     usage: '/showqr <invoice-o-data>',
     examples: ['/showqr lnbc1000...', '/showqr bc1q...']
+  },
+  [COMMANDS.TESTCONNECTION]: {
+    description: 'Ejecutar prueba automática de conexión y compatibilidad',
+    usage: '/testconnection',
+    aliases: ['test', 'check'],
+    examples: ['/testconnection']
+  },
+  [COMMANDS.TESTINGGUIDE]: {
+    description: 'Mostrar guía de testing paso a paso',
+    usage: '/testingguide',
+    aliases: ['testing', 'testguide'],
+    examples: ['/testingguide']
   }
 };
 
