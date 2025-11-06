@@ -263,7 +263,9 @@ class MostroMessaging {
         fiat_code: orderParams.fiatCode,
         fiat_amount: orderParams.fiatAmount,
         payment_method: orderParams.paymentMethod,
-        premium: orderParams.premium || 0
+        premium: orderParams.premium || 0,
+        network: orderParams.network || 'mainnet', // NIP-69: mainnet/testnet/signet
+        layer: orderParams.layer || 'lightning' // NIP-69: lightning/onchain/liquid
       }
     };
 
@@ -289,7 +291,9 @@ class MostroMessaging {
         fiat_code: orderParams.fiatCode,
         fiat_amount: orderParams.fiatAmount,
         payment_method: orderParams.paymentMethod,
-        premium: orderParams.premium || 0
+        premium: orderParams.premium || 0,
+        network: orderParams.network || 'mainnet', // NIP-69: mainnet/testnet/signet
+        layer: orderParams.layer || 'lightning' // NIP-69: lightning/onchain/liquid
       }
     };
 

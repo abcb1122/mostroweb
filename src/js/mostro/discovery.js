@@ -146,9 +146,11 @@ class Discovery {
       // Crear filtro para órdenes públicas Mostro
       // Kind 38383: NIP-69 P2P Order events
       // Tag y: "mostrop2p" - Identificador del marketplace Mostro
+      // Tag network: "mainnet" - Filtrar solo órdenes de mainnet (cambiar a "testnet" para testing)
       const filter = {
         kinds: [NOSTR_KINDS.P2P_ORDER], // 38383
         '#y': [MOSTRO_TAGS.MARKETPLACE],   // "mostrop2p"
+        '#network': ['mainnet'], // Solo órdenes de mainnet (cambiar a 'testnet' para testing)
         limit: 500 // Últimas 500 órdenes
       };
 

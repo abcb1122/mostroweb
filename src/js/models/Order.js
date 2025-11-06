@@ -358,9 +358,10 @@ export default class Order {
     const amount = this.getAmountDisplay().padEnd(20);
     const premium = this.getPremiumDisplay().padEnd(7);
     const payment = (this.paymentMethod || 'N/A').padEnd(20);
+    const network = this.network ? `[${this.network}]`.padEnd(11) : '[mainnet]'.padEnd(11);
     const id = this.getShortId();
 
-    return `${icon} ${type} | ${amount} ${premium} | ${payment} | ${id}`;
+    return `${icon} ${type} | ${amount} ${premium} | ${payment} | ${network} | ${id}`;
   }
 
   /**
@@ -380,6 +381,8 @@ export default class Order {
 
     lines.push(`Payment Method: ${this.paymentMethod || 'N/A'}`);
     lines.push(`Status: ${this.status}`);
+    lines.push(`Network: ${this.network || 'mainnet'}`);
+    lines.push(`Layer: ${this.layer || 'lightning'}`);
 
     const date = new Date(this.createdAt).toLocaleString();
     lines.push(`Created: ${date}`);
