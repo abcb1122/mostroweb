@@ -6,6 +6,7 @@
 
 import Display from './display.js';
 import Logger from '../utils/logger.js';
+import QRCodeManager from './qrcode.js';
 
 /**
  * NotificationSystem class
@@ -72,6 +73,23 @@ class NotificationSystem {
       Display.blank();
       Display.addLine('   Invoice Lightning:', 'info');
       Display.addLine(`   ${invoice.slice(0, 40)}...`, 'dim');
+      Display.blank();
+
+      // Mostrar QR automáticamente si la librería está disponible
+      if (QRCodeManager.isAvailable()) {
+        Display.info('   📱 Mostrando código QR...');
+        Display.blank();
+
+        // Mostrar QR code
+        setTimeout(() => {
+          QRCodeManager.showInvoice(invoice, {
+            orderId: orderId,
+            description: 'Escanea con tu wallet Lightning'
+          });
+        }, 100);
+      } else {
+        Display.dim('   💡 Tip: Usa /showqr <invoice> para ver código QR');
+      }
     }
 
     Display.blank();

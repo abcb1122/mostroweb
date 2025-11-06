@@ -12,6 +12,7 @@ import RelayManager from '../core/relayManager.js';
 import Discovery from '../mostro/discovery.js';
 import MostroMessaging from '../mostro/messaging.js';
 import OnboardingWizard from './wizard.js';
+import QRCodeManager from './qrcode.js';
 import {
   promptPassword,
   promptPasswordConfirm,
@@ -196,6 +197,10 @@ export async function executeCommand(input) {
 
       case COMMANDS.MYSTATS:
         await handleMyStats(args);
+        break;
+
+      case COMMANDS.SHOWQR:
+        await handleShowQR(args);
         break;
 
       // Comandos no implementados aún
@@ -1512,6 +1517,20 @@ async function handleRelease(args) {
     Display.warning('⚠️  CRÍTICO: Solo libera fondos si recibiste el pago fiat.');
     Display.warning('⚠️  Esta acción es IRREVERSIBLE.');
     Display.blank();
+
+    // Pedir confirmación
+    const confirmed = await promptConfirmation(
+      '¿Confirmas que recibiste el pago fiat y quieres liberar los satoshis? (sí/no)'
+    );
+
+    if (!confirmed) {
+      Display.info('Liberación cancelada');
+      Display.blank();
+      Display.dim('Usa /release <order-id> cuando hayas confirmado el pago fiat');
+      return;
+    }
+
+    Display.blank();
     Display.info(`Liberando fondos para orden ${orderId.slice(0, 8)}...`);
 
     // Liberar fondos
@@ -1618,6 +1637,62 @@ async function handleMyStats(args) {
   } catch (error) {
     Logger.error('MyStats command error:', error);
     Display.error('Error mostrando estadísticas');
+  }
+}
+
+/**
+ * Comando: /showqr
+ * Muestra un código QR para Lightning invoice o dirección
+ */
+async function handleShowQR(args) {
+  try {
+    if (args.length === 0) {
+      Display.error('Debes especificar una invoice o datos para el QR');
+      Display.dim('Uso: /showqr <lightning-invoice>');
+      Display.dim('Ejemplo: /showqr lnbc1000...');
+      return;
+    }
+
+    const data = args.join(' ');
+
+    // Verificar si es una Lightning invoice
+    const isLightningInvoice = /^(lnbc|lntb|lnbcrt)/i.test(data);
+
+    if (!QRCodeManager.isAvailable()) {
+      Display.error('Librería QR code no está disponible');
+      return;
+    }
+
+    Display.blank();
+
+    if (isLightningInvoice) {
+      // Mostrar como Lightning invoice
+      const success = QRCodeManager.showInvoice(data, {
+        description: 'Invoice Lightning'
+      });
+
+      if (success) {
+        Display.success('✅ Código QR generado');
+        Display.blank();
+        QRCodeManager.showASCII(data);
+      }
+    } else {
+      // Mostrar QR genérico
+      const success = QRCodeManager.show(data, {
+        title: 'Código QR',
+        description: 'Escanea este código QR'
+      });
+
+      if (success) {
+        Display.success('✅ Código QR generado');
+        Display.blank();
+        QRCodeManager.showASCII(data);
+      }
+    }
+
+  } catch (error) {
+    Logger.error('ShowQR command error:', error);
+    Display.error('Error generando código QR');
   }
 }
 

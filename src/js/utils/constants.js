@@ -4,7 +4,7 @@
  */
 
 // Versión de la aplicación
-export const APP_VERSION = '0.1.0';
+export const APP_VERSION = '1.0.0';
 export const APP_NAME = 'MostroWeb';
 
 // Relays Nostr públicos por defecto
@@ -237,6 +237,7 @@ export const COMMANDS = {
   // Fase 5 - Utilities & History
   HISTORY: '/history',
   MYSTATS: '/mystats',
+  SHOWQR: '/showqr',
 
   // Deprecated/Alias (usar /neworder)
   RESTORE: '/restore',
@@ -391,6 +392,11 @@ export const COMMAND_INFO = {
     description: 'Ver tus estadísticas de trading',
     usage: '/mystats',
     examples: ['/mystats']
+  },
+  [COMMANDS.SHOWQR]: {
+    description: 'Mostrar código QR para Lightning invoice o dirección',
+    usage: '/showqr <invoice-o-data>',
+    examples: ['/showqr lnbc1000...', '/showqr bc1q...']
   }
 };
 

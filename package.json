@@ -1,6 +1,6 @@
 {
   "name": "mostroweb",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Cliente web terminal retro para el protocolo Mostro P2P - Intercambio descentralizado de Bitcoin sobre Nostr",
   "main": "scripts/dev-server.js",
   "type": "module",
