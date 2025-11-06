@@ -8,6 +8,7 @@
 
 import Logger from '../utils/logger.js';
 import Display from '../ui/display.js';
+import Notifications from '../ui/notifications.js';
 import { MOSTRO_ACTIONS, ORDER_STATUS } from '../utils/constants.js';
 import Discovery from './discovery.js';
 
@@ -294,19 +295,19 @@ class MostroResponseHandler {
    * El daemon no pudo procesar la solicitud
    */
   handleCantDo(message) {
-    const { payload } = message.order;
+    const { id: orderId, payload } = message.order;
     const reason = payload?.cant_do_reason || 'Unknown';
 
     const errorMessage = ERROR_MESSAGES_ES[reason] || reason;
 
     Logger.error(`ResponseHandler: CantDo - ${errorMessage}`, payload);
 
-    Display.error(`❌ Error del daemon Mostro:`);
-    Display.error(`   Razón: ${errorMessage}`);
-
-    if (payload?.description) {
-      Display.error(`   Detalle: ${payload.description}`);
-    }
+    // Usar sistema de notificaciones mejorado
+    Notifications.error(
+      reason,
+      errorMessage,
+      orderId
+    );
 
     this.stats.errorsHandled++;
 
@@ -326,9 +327,8 @@ class MostroResponseHandler {
 
     Logger.info(`ResponseHandler: BuyerInvoiceAccepted for order ${orderId}`);
 
-    Display.success(`✅ Invoice aceptada por Mostro`);
-    Display.info(`   Order ID: ${orderId}`);
-    Display.info(`   Estado: Esperando que el seller pague hold invoice`);
+    // Usar sistema de notificaciones mejorado
+    Notifications.invoiceAccepted(orderId, payload?.invoice);
 
     // Actualizar estado local
     this.updateOrderState(orderId, {
@@ -353,10 +353,8 @@ class MostroResponseHandler {
 
     Logger.info(`ResponseHandler: PurchaseCompleted for order ${orderId}`);
 
-    Display.success(`🎉 ¡TRADE COMPLETADO!`);
-    Display.success(`   Order ID: ${orderId}`);
-    Display.info(`   Los sats fueron enviados exitosamente`);
-    Display.info(`   Puedes calificar a tu contraparte con: /rate ${orderId} <1-5>`);
+    // Usar sistema de notificaciones mejorado
+    Notifications.purchaseCompleted(orderId);
 
     // Actualizar estado local
     this.updateOrderState(orderId, {
@@ -387,10 +385,8 @@ class MostroResponseHandler {
 
     Logger.info(`ResponseHandler: HoldInvoicePaymentAccepted for order ${orderId}`);
 
-    Display.success(`✅ Hold invoice pagada por el seller`);
-    Display.info(`   Order ID: ${orderId}`);
-    Display.info(`   Estado: Active - Trade en progreso`);
-    Display.info(`   Siguiente paso: El buyer debe enviar fiat y confirmar con /fiatsent ${orderId}`);
+    // Usar sistema de notificaciones mejorado
+    Notifications.holdInvoicePaymentAccepted(orderId);
 
     // Actualizar estado local
     this.updateOrderState(orderId, {
@@ -647,9 +643,8 @@ class MostroResponseHandler {
 
     Logger.info(`ResponseHandler: FiatSentOk ${orderId}`);
 
-    Display.success(`✅ Notificación de fiat enviado registrada`);
-    Display.info(`   Order ID: ${orderId}`);
-    Display.info(`   Esperando que el seller libere los fondos`);
+    // Usar sistema de notificaciones mejorado
+    Notifications.fiatSent(orderId);
 
     this.updateOrderState(orderId, {
       status: ORDER_STATUS.FIAT_SENT,
@@ -981,6 +976,25 @@ class MostroResponseHandler {
       ...this.stats,
       activeOrders: this.activeOrders.size
     };
+  }
+  /**
+   * Obtener estadísticas de respuestas procesadas
+   * @returns {Object} Estadísticas
+   */
+  getStats() {
+    return {
+      messagesReceived: this.stats.messagesReceived,
+      errorsHandled: this.stats.errorsHandled,
+      tradesCompleted: this.stats.tradesCompleted
+    };
+  }
+
+  /**
+   * Obtener órdenes activas
+   * @returns {Map} Mapa de órdenes activas
+   */
+  getActiveOrders() {
+    return this.activeOrders;
   }
 }
 

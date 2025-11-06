@@ -199,6 +199,7 @@ export const PATTERNS = {
 // Comandos disponibles (Fase 1 - básicos)
 export const COMMANDS = {
   HELP: '/help',
+  TUTORIAL: '/tutorial',
   CLEAR: '/clear',
   THEME: '/theme',
   VERSION: '/version',
@@ -233,6 +234,10 @@ export const COMMANDS = {
   FIATSENT: '/fiatsent',
   RELEASE: '/release',
 
+  // Fase 5 - Utilities & History
+  HISTORY: '/history',
+  MYSTATS: '/mystats',
+
   // Deprecated/Alias (usar /neworder)
   RESTORE: '/restore',
   NEWSELL: '/newsell',
@@ -245,6 +250,11 @@ export const COMMAND_INFO = {
     description: 'Mostrar comandos disponibles',
     usage: '/help [command]',
     aliases: ['?', 'h']
+  },
+  [COMMANDS.TUTORIAL]: {
+    description: 'Mostrar guía completa paso a paso para usar MostroWeb',
+    usage: '/tutorial',
+    aliases: ['guide', 'onboarding']
   },
   [COMMANDS.CLEAR]: {
     description: 'Limpiar salida del terminal',
@@ -371,6 +381,16 @@ export const COMMAND_INFO = {
     description: 'Liberar satoshis al comprador después de recibir fiat (vendedores)',
     usage: '/release <order-id>',
     examples: ['/release abc123def456']
+  },
+  [COMMANDS.HISTORY]: {
+    description: 'Ver historial de notificaciones y eventos recientes',
+    usage: '/history [limit]',
+    examples: ['/history', '/history 20']
+  },
+  [COMMANDS.MYSTATS]: {
+    description: 'Ver tus estadísticas de trading',
+    usage: '/mystats',
+    examples: ['/mystats']
   }
 };
 

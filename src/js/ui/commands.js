@@ -11,6 +11,7 @@ import KeyManager from '../core/keyManager.js';
 import RelayManager from '../core/relayManager.js';
 import Discovery from '../mostro/discovery.js';
 import MostroMessaging from '../mostro/messaging.js';
+import OnboardingWizard from './wizard.js';
 import {
   promptPassword,
   promptPasswordConfirm,
@@ -66,6 +67,12 @@ export async function executeCommand(input) {
       case '/h':
       case '/?':
         handleHelp(args);
+        break;
+
+      case COMMANDS.TUTORIAL:
+      case '/guide':
+      case '/onboarding':
+        await handleTutorial(args);
         break;
 
       case COMMANDS.CLEAR:
@@ -171,6 +178,26 @@ export async function executeCommand(input) {
         await handleCancel(args);
         break;
 
+      case COMMANDS.ADDINVOICE:
+        await handleAddInvoice(args);
+        break;
+
+      case COMMANDS.FIATSENT:
+        await handleFiatSent(args);
+        break;
+
+      case COMMANDS.RELEASE:
+        await handleRelease(args);
+        break;
+
+      case COMMANDS.HISTORY:
+        await handleHistory(args);
+        break;
+
+      case COMMANDS.MYSTATS:
+        await handleMyStats(args);
+        break;
+
       // Comandos no implementados aún
       case COMMANDS.RESTORE:
       case COMMANDS.NEWSELL:
@@ -202,6 +229,20 @@ function handleHelp(args) {
     const cmd = args[0];
     Display.info(`Ayuda para ${cmd} - Próximamente`);
     Display.dim('Por ahora, usa /help para ver todos los comandos');
+  }
+}
+
+/**
+ * Comando: /tutorial
+ * Muestra la guía completa de onboarding
+ */
+async function handleTutorial(args) {
+  try {
+    Display.clear();
+    await OnboardingWizard.showTutorial();
+  } catch (error) {
+    Logger.error('Tutorial command error:', error);
+    Display.error('Error mostrando tutorial');
   }
 }
 
@@ -1492,6 +1533,91 @@ async function handleRelease(args) {
   } catch (error) {
     Logger.error('Release command error:', error);
     Display.error(`Error al liberar fondos: ${error.message}`);
+  }
+}
+
+/**
+ * Comando: /history
+ * Muestra historial de notificaciones y eventos
+ */
+async function handleHistory(args) {
+  try {
+    const limit = args.length > 0 ? parseInt(args[0], 10) : 10;
+
+    if (isNaN(limit) || limit < 1 || limit > 100) {
+      Display.error('Límite inválido. Usa un número entre 1 y 100');
+      Display.dim('Uso: /history [limit]');
+      Display.dim('Ejemplo: /history 20');
+      return;
+    }
+
+    const Notifications = await import('./notifications.js').then(m => m.default);
+    Notifications.showHistory(limit);
+
+  } catch (error) {
+    Logger.error('History command error:', error);
+    Display.error('Error mostrando historial');
+  }
+}
+
+/**
+ * Comando: /mystats
+ * Muestra estadísticas de trading del usuario
+ */
+async function handleMyStats(args) {
+  try {
+    Display.blank();
+    Display.addLine('📊 Tus Estadísticas de Trading', 'primary');
+    Display.addLine('═══════════════════════════════════════', 'dim');
+    Display.blank();
+
+    // Obtener estadísticas del ResponseHandler
+    const ResponseHandler = await import('../mostro/responseHandler.js').then(m => m.default);
+    const stats = ResponseHandler.getStats();
+
+    Display.addLine('  Mensajes Procesados:', 'info');
+    Display.addLine(`    Recibidos: ${stats.messagesReceived}`, 'dim');
+    Display.addLine(`    Errores:   ${stats.errorsHandled}`, 'dim');
+    Display.blank();
+
+    Display.addLine('  Trades:', 'info');
+    Display.addLine(`    Completados: ${stats.tradesCompleted}`, 'success');
+    Display.blank();
+
+    // Obtener órdenes activas
+    const activeOrders = ResponseHandler.getActiveOrders();
+    Display.addLine(`  Órdenes Activas: ${activeOrders.size}`, 'warning');
+
+    if (activeOrders.size > 0) {
+      Display.blank();
+      Display.addLine('  Estado de Órdenes:', 'info');
+
+      activeOrders.forEach((order, orderId) => {
+        const statusEmoji = {
+          [ORDER_STATUS.PENDING]: '⏳',
+          [ORDER_STATUS.ACTIVE]: '▶️',
+          [ORDER_STATUS.WAITING_PAYMENT]: '💰',
+          [ORDER_STATUS.FIAT_SENT]: '💸',
+          [ORDER_STATUS.SUCCESS]: '✅',
+          [ORDER_STATUS.CANCELED]: '❌',
+          [ORDER_STATUS.DISPUTE]: '⚖️'
+        };
+
+        const emoji = statusEmoji[order.status] || '📦';
+        Display.addLine(`    ${emoji} ${orderId.slice(0, 12)}... → ${order.status}`, 'dim');
+      });
+    }
+
+    Display.blank();
+    Display.addLine('═══════════════════════════════════════', 'dim');
+    Display.blank();
+
+    Display.dim('Usa /history para ver tu historial de notificaciones');
+    Display.blank();
+
+  } catch (error) {
+    Logger.error('MyStats command error:', error);
+    Display.error('Error mostrando estadísticas');
   }
 }
 
