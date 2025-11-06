@@ -320,47 +320,50 @@ docker run -d -p 7000:8080 scsibug/nostr-rs-relay
 ### Descubrimiento
 - [x] Filtro por kind 38383
 - [x] Filtro por tag `y` = "mostrop2p"
-- [ ] **Pendiente**: Filtro por network
+- [x] **Implementado**: Filtro por network (discovery.js:153)
 - [ ] **Pendiente**: Filtro por status
 
 ### UI/UX
 - [x] Display de órdenes con todos los campos NIP-69
 - [x] Soporte para range orders (min-max)
-- [x] Indicadores de network/layer
+- [x] **Mejorado**: Indicadores de network/layer en listorders (Order.js:361, 384-385)
 - [x] Estado de órdenes con emojis
 
 ---
 
 ## 🚀 Recomendaciones de Mejoras
 
-### Prioridad Alta
+### Prioridad Alta ✅ IMPLEMENTADO (2025-11-06)
 
-1. **Agregar filtro por network**:
+1. **✅ Agregar filtro por network** (Implementado en discovery.js:153):
    ```javascript
    // En discovery.js
    const filter = {
      kinds: [38383],
      '#y': ['mostrop2p'],
-     '#network': ['mainnet'], // O 'testnet' para testing
+     '#network': ['mainnet'], // ✅ Implementado - Cambiar a 'testnet' para testing
      limit: 500
    };
    ```
 
-2. **Incluir network tag al crear órdenes**:
+2. **✅ Incluir network tag al crear órdenes** (Implementado en messaging.js:267-268, 295-296):
    ```javascript
-   // En messaging.js - buildMessage()
-   tags: [
-     ['y', 'mostrop2p'],
-     ['z', 'order'],
-     ['network', 'mainnet'], // ← Agregar
-     ['layer', 'lightning']   // ← Agregar
-   ]
+   // En messaging.js - createBuyOrder() y createSellOrder()
+   payload.order = {
+     // ... otros campos ...
+     network: orderParams.network || 'mainnet', // ✅ Implementado
+     layer: orderParams.layer || 'lightning'     // ✅ Implementado
+   };
    ```
 
-3. **Display de network en listorders**:
+3. **✅ Display de network en listorders** (Implementado en Order.js:361, 384-385):
    ```javascript
-   // Mostrar si es mainnet/testnet/signet
-   Display.addLine(`Network: ${order.network || 'mainnet'}`, 'dim');
+   // Order.toDisplayString()
+   const network = this.network ? `[${this.network}]`.padEnd(11) : '[mainnet]'.padEnd(11);
+
+   // Order.toDetailedDisplay()
+   lines.push(`Network: ${this.network || 'mainnet'}`);
+   lines.push(`Layer: ${this.layer || 'lightning'}`);
    ```
 
 ### Prioridad Media
@@ -392,11 +395,11 @@ docker run -d -p 7000:8080 scsibug/nostr-rs-relay
 
 ## 📊 Próximos Pasos
 
-1. **Implementar mejoras de prioridad alta** ✅ Recomendado
-2. **Testing en testnet con mostro-cli**
-3. **Verificar en p2p.band**
-4. **Documentar resultados de testing**
-5. **Crear issue si se encuentran incompatibilidades**
+1. ✅ **Implementar mejoras de prioridad alta** - COMPLETADO (2025-11-06)
+2. **Testing en testnet con mostro-cli** - Pendiente
+3. **Verificar en p2p.band** - Pendiente
+4. **Documentar resultados de testing** - Pendiente
+5. **Crear issue si se encuentran incompatibilidades** - Pendiente
 
 ---
 
@@ -420,13 +423,15 @@ Si encuentras problemas de compatibilidad:
 - Content vacío como especifica NIP-69
 - Soporte para range orders
 - Multiple relays configurados
+- ✅ **NUEVO**: Filtrado por network implementado
+- ✅ **NUEVO**: Network/layer tags en creación de órdenes
+- ✅ **NUEVO**: Display de network en UI
 
-⚠️ **Áreas de Mejora**:
-- Agregar filtro por network
-- Incluir network/layer tags al crear órdenes
+⚠️ **Áreas de Mejora Restantes**:
 - Verificar relay oficial Mostro
-- Testing real con testnet
+- Testing real con testnet/mainnet
+- Validación con p2p.band y otros clientes
 
-**Compatibilidad Estimada**: **95%** ✅
+**Compatibilidad Estimada**: **98%** ✅ (Mejorado desde 95%)
 
-**Listo para producción con testing adicional en testnet.**
+**Estado**: Listo para testing en testnet y verificación con ecosistema real.
