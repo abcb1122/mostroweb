@@ -9,11 +9,12 @@ export const APP_NAME = 'MostroWeb';
 
 // Relays Nostr públicos por defecto
 export const DEFAULT_RELAYS = [
-  'wss://relay.damus.io',
-  'wss://nostr-pub.wellorder.net',
-  'wss://nos.lol',
-  'wss://relay.snort.social',
-  'wss://relay.nostr.band'
+  'wss://relay.mostro.network',    // Relay oficial de Mostro (prioridad)
+  'wss://relay.damus.io',          // Relay público ampliamente usado
+  'wss://nostr-pub.wellorder.net', // Relay público wellorder
+  'wss://nos.lol',                 // Relay público nos
+  'wss://relay.snort.social',      // Relay público snort
+  'wss://relay.nostr.band'         // Relay con índice completo de eventos
 ];
 
 // Tipos de eventos Nostr
