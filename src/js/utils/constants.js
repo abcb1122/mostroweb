@@ -228,6 +228,11 @@ export const COMMANDS = {
   TAKESELL: '/takesell',
   CANCEL: '/cancel',
 
+  // Fase 4 - Lightning & Payment Flow
+  ADDINVOICE: '/addinvoice',
+  FIATSENT: '/fiatsent',
+  RELEASE: '/release',
+
   // Deprecated/Alias (usar /neworder)
   RESTORE: '/restore',
   NEWSELL: '/newsell',
@@ -351,6 +356,21 @@ export const COMMAND_INFO = {
     description: 'Cancelar una orden pendiente',
     usage: '/cancel <order-id>',
     examples: ['/cancel abc123def456']
+  },
+  [COMMANDS.ADDINVOICE]: {
+    description: 'Añadir invoice Lightning para recibir pago (compradores)',
+    usage: '/addinvoice <order-id> <lightning-invoice>',
+    examples: ['/addinvoice abc123def456 lnbc1000...']
+  },
+  [COMMANDS.FIATSENT]: {
+    description: 'Notificar que enviaste el pago fiat (compradores)',
+    usage: '/fiatsent <order-id>',
+    examples: ['/fiatsent abc123def456']
+  },
+  [COMMANDS.RELEASE]: {
+    description: 'Liberar satoshis al comprador después de recibir fiat (vendedores)',
+    usage: '/release <order-id>',
+    examples: ['/release abc123def456']
   }
 };
 

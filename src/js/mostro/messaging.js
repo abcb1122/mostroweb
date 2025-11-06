@@ -11,6 +11,7 @@
 import { MOSTRO_ACTIONS, MOSTRO_PROTOCOL_VERSION, NOSTR_KINDS } from '../utils/constants.js';
 import Logger from '../utils/logger.js';
 import RelayManager from '../core/relayManager.js';
+import ResponseHandler from './responseHandler.js';
 
 /**
  * MostroMessaging class
@@ -23,6 +24,12 @@ class MostroMessaging {
 
     // Contador de request_id
     this.requestCounter = 0;
+
+    // Subscription for receiving responses
+    this.responseSubscription = null;
+
+    // Flag to track if we're listening
+    this.isListening = false;
   }
 
   /**
@@ -333,6 +340,80 @@ class MostroMessaging {
     return await this.sendToMostro(MOSTRO_ACTIONS.CANCEL, {}, {
       orderId
     });
+  }
+
+  /**
+   * Inicia la escucha de respuestas de Mostro (Gift Wrap events)
+   * @returns {Promise<void>}
+   */
+  async startListening() {
+    try {
+      // Verificar que tengamos identidad del usuario
+      const identityData = sessionStorage.getItem('mostro_identity');
+      if (!identityData) {
+        throw new Error('No identity found. Use /start or /login first.');
+      }
+
+      const identity = JSON.parse(identityData);
+      const { getPublicKey } = window.nostrTools;
+      const userPubkey = getPublicKey(new Uint8Array(identity.secretKey));
+
+      // Si ya estamos escuchando, no hacer nada
+      if (this.isListening) {
+        Logger.info('MostroMessaging: Already listening for responses');
+        return;
+      }
+
+      Logger.info('MostroMessaging: Starting to listen for Mostro responses...');
+
+      // Crear filtro para Gift Wrap events dirigidos al usuario
+      const filter = {
+        kinds: [NOSTR_KINDS.GIFT_WRAP],
+        '#p': [userPubkey],
+        since: Math.floor(Date.now() / 1000) // Solo eventos desde ahora
+      };
+
+      // Suscribirse a eventos
+      this.responseSubscription = await RelayManager.subscribe(
+        filter,
+        async (event) => {
+          Logger.debug('MostroMessaging: Received Gift Wrap event', event.id.slice(0, 8));
+
+          try {
+            // Pasar el evento al ResponseHandler para procesarlo
+            await ResponseHandler.handleIncomingMessage(event);
+          } catch (error) {
+            Logger.error('MostroMessaging: Error processing response', error);
+          }
+        },
+        () => {
+          Logger.info('MostroMessaging: EOSE received for response subscription');
+        }
+      );
+
+      this.isListening = true;
+      Logger.info('MostroMessaging: Now listening for Mostro responses');
+
+    } catch (error) {
+      Logger.error('MostroMessaging: Error starting listener', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Detiene la escucha de respuestas de Mostro
+   */
+  stopListening() {
+    if (this.responseSubscription) {
+      try {
+        this.responseSubscription.unsub();
+        this.responseSubscription = null;
+        this.isListening = false;
+        Logger.info('MostroMessaging: Stopped listening for responses');
+      } catch (error) {
+        Logger.error('MostroMessaging: Error stopping listener', error);
+      }
+    }
   }
 }
 

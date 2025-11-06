@@ -865,6 +865,15 @@ async function handleDiscover(args) {
 
     await Discovery.startDiscovery();
 
+    // Iniciar escucha de respuestas de Mostro
+    try {
+      await MostroMessaging.startListening();
+      Logger.info('Commands: Started listening for Mostro responses');
+    } catch (error) {
+      Logger.warn('Commands: Could not start listening for responses', error);
+      // No es crítico, continuar de todas formas
+    }
+
     Display.success(SUCCESS_MESSAGES.DISCOVERY_STARTED);
     Display.blank();
     Display.dim('Escuchando eventos de órdenes...');
@@ -1323,6 +1332,166 @@ async function handleCancel(args) {
   } catch (error) {
     Logger.error('Cancel command error:', error);
     Display.error(`Error al cancelar orden: ${error.message}`);
+  }
+}
+
+/**
+ * Maneja comando /addinvoice para añadir invoice Lightning
+ * @param {string[]} args - Argumentos: [order-id, invoice]
+ */
+async function handleAddInvoice(args) {
+  try {
+    if (args.length < 2) {
+      Display.error('Debes especificar el ID de la orden y la invoice.');
+      Display.dim('Uso: /addinvoice <order-id> <lightning-invoice>');
+      Display.dim('Ejemplo: /addinvoice abc123 lnbc1000...');
+      return;
+    }
+
+    const orderId = args[0];
+    const invoice = args[1];
+
+    // Validar formato de invoice Lightning
+    if (!PATTERNS.LIGHTNING_INVOICE.test(invoice)) {
+      Display.error('Invoice Lightning inválida.');
+      Display.dim('Debe empezar con lnbc (mainnet), lntb (testnet) o lnbcrt (regtest).');
+      return;
+    }
+
+    // Verificar que la orden existe
+    const order = Discovery.getOrder(orderId);
+    if (!order) {
+      Display.error(`Orden no encontrada: ${orderId}`);
+      Display.dim('Solo puedes añadir invoice a órdenes que aparecen en /listorders.');
+      return;
+    }
+
+    MostroMessaging.setMostroPubkey(order.mostroPubkey);
+
+    Display.info(`Enviando invoice para orden ${orderId.slice(0, 8)}...`);
+
+    // Enviar invoice a Mostro
+    const result = await MostroMessaging.sendToMostro(
+      MOSTRO_ACTIONS.ADD_INVOICE,
+      { invoice },
+      { orderId }
+    );
+
+    Display.blank();
+    Display.success('✓ Invoice enviada a Mostro');
+    Display.blank();
+    Display.addLine(`Order ID: ${orderId.slice(0, 8)}...`, 'dim');
+    Display.addLine(`Request ID: ${result.requestId}`, 'dim');
+    Display.blank();
+    Display.info('Espera confirmación del daemon Mostro...');
+    Display.dim('Recibirás una notificación cuando el pago sea procesado.');
+
+  } catch (error) {
+    Logger.error('AddInvoice command error:', error);
+    Display.error(`Error al enviar invoice: ${error.message}`);
+  }
+}
+
+/**
+ * Maneja comando /fiatsent para notificar envío de pago fiat
+ * @param {string[]} args - Argumentos: [order-id]
+ */
+async function handleFiatSent(args) {
+  try {
+    if (args.length === 0) {
+      Display.error('Debes especificar el ID de la orden.');
+      Display.dim('Uso: /fiatsent <order-id>');
+      Display.dim('Ejemplo: /fiatsent abc123def456');
+      return;
+    }
+
+    const orderId = args[0];
+
+    // Verificar que la orden existe
+    const order = Discovery.getOrder(orderId);
+    if (!order) {
+      Display.error(`Orden no encontrada: ${orderId}`);
+      Display.dim('Solo puedes notificar pago en órdenes activas.');
+      return;
+    }
+
+    MostroMessaging.setMostroPubkey(order.mostroPubkey);
+
+    Display.warning('⚠️  IMPORTANTE: Solo confirma si realmente enviaste el pago fiat.');
+    Display.blank();
+    Display.info(`Notificando envío de pago para orden ${orderId.slice(0, 8)}...`);
+
+    // Notificar a Mostro que el fiat fue enviado
+    const result = await MostroMessaging.sendToMostro(
+      MOSTRO_ACTIONS.FIAT_SENT,
+      {},
+      { orderId }
+    );
+
+    Display.blank();
+    Display.success('✓ Notificación enviada a Mostro');
+    Display.blank();
+    Display.addLine(`Order ID: ${orderId.slice(0, 8)}...`, 'dim');
+    Display.addLine(`Request ID: ${result.requestId}`, 'dim');
+    Display.blank();
+    Display.info('Espera que el vendedor confirme la recepción del pago...');
+    Display.dim('El vendedor revisará el pago y liberará los satoshis.');
+
+  } catch (error) {
+    Logger.error('FiatSent command error:', error);
+    Display.error(`Error al notificar pago: ${error.message}`);
+  }
+}
+
+/**
+ * Maneja comando /release para liberar fondos Bitcoin
+ * @param {string[]} args - Argumentos: [order-id]
+ */
+async function handleRelease(args) {
+  try {
+    if (args.length === 0) {
+      Display.error('Debes especificar el ID de la orden.');
+      Display.dim('Uso: /release <order-id>');
+      Display.dim('Ejemplo: /release abc123def456');
+      return;
+    }
+
+    const orderId = args[0];
+
+    // Verificar que la orden existe
+    const order = Discovery.getOrder(orderId);
+    if (!order) {
+      Display.error(`Orden no encontrada: ${orderId}`);
+      Display.dim('Solo puedes liberar fondos en órdenes donde eres vendedor.');
+      return;
+    }
+
+    MostroMessaging.setMostroPubkey(order.mostroPubkey);
+
+    Display.warning('⚠️  CRÍTICO: Solo libera fondos si recibiste el pago fiat.');
+    Display.warning('⚠️  Esta acción es IRREVERSIBLE.');
+    Display.blank();
+    Display.info(`Liberando fondos para orden ${orderId.slice(0, 8)}...`);
+
+    // Liberar fondos
+    const result = await MostroMessaging.sendToMostro(
+      MOSTRO_ACTIONS.RELEASE,
+      {},
+      { orderId }
+    );
+
+    Display.blank();
+    Display.success('✓ Solicitud de liberación enviada a Mostro');
+    Display.blank();
+    Display.addLine(`Order ID: ${orderId.slice(0, 8)}...`, 'dim');
+    Display.addLine(`Request ID: ${result.requestId}`, 'dim');
+    Display.blank();
+    Display.info('Los satoshis serán liberados al comprador...');
+    Display.dim('El trade se completará una vez que Mostro procese la liberación.');
+
+  } catch (error) {
+    Logger.error('Release command error:', error);
+    Display.error(`Error al liberar fondos: ${error.message}`);
   }
 }
 
