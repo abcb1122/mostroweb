@@ -1,35 +1,62 @@
-# Node modules
+# Dependencies
 node_modules/
+package-lock.json
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+
+# Build output
+dist/
+build/
+out/
+.next/
+.cache/
 
 # Environment variables
 .env
 .env.local
-.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-# OS files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
-# IDE files
+# IDE / Editor
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
+.DS_Store
+*.sublime-project
+*.sublime-workspace
 
-# Build files
-dist/
-build/
+# OS
+Thumbs.db
+Desktop.ini
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+
+# Testing
+coverage/
+.nyc_output/
 *.log
+
+# Temporary files
+tmp/
+temp/
+*.tmp
 
 # Local storage data (testing)
 *.sqlite
 *.db
+
+# Project specific
+# (añadir aquí archivos específicos del proyecto si es necesario)
+
+# Keep these files
+!.gitkeep

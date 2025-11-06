@@ -1,24 +1,46 @@
 {
   "name": "mostroweb",
   "version": "0.1.0",
-  "description": "Cliente web frontend estilo terminal retro para Mostro P2P",
-  "main": "server.js",
+  "description": "Cliente web terminal retro para el protocolo Mostro P2P - Intercambio descentralizado de Bitcoin sobre Nostr",
+  "main": "scripts/dev-server.js",
   "type": "module",
-  "scripts": {
-    "start": "node server.js",
-    "dev": "node --watch server.js",
-    "test": "echo \"Tests coming soon\" && exit 0"
-  },
   "keywords": [
     "mostro",
     "nostr",
     "p2p",
     "bitcoin",
     "lightning",
-    "terminal"
+    "terminal",
+    "decentralized",
+    "censorship-resistant",
+    "non-custodial",
+    "nip-59",
+    "nip-44",
+    "nip-69"
   ],
-  "author": "",
+  "author": "MostroWeb Contributors",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abcb1122/mostroweb.git"
+  },
+  "bugs": {
+    "url": "https://github.com/abcb1122/mostroweb/issues"
+  },
+  "homepage": "https://github.com/abcb1122/mostroweb#readme",
+  "scripts": {
+    "start": "node scripts/dev-server.js",
+    "dev": "node --watch scripts/dev-server.js",
+    "test": "echo \"Tests coming soon\" && exit 0",
+    "test:watch": "echo \"Tests coming soon\" && exit 0",
+    "test:coverage": "echo \"Tests coming soon\" && exit 0",
+    "lint": "echo \"Linter coming soon\" && exit 0",
+    "lint:fix": "echo \"Linter coming soon\" && exit 0",
+    "format": "echo \"Formatter coming soon\" && exit 0",
+    "build": "echo \"Build process coming soon\" && exit 0",
+    "clean": "rm -rf node_modules package-lock.json",
+    "health": "curl http://localhost:3000/health"
+  },
   "dependencies": {
     "express": "^4.18.2",
     "nostr-tools": "^2.5.2",
@@ -27,6 +49,15 @@
   },
   "devDependencies": {},
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
+  "config": {
+    "port": "3000"
   }
 }
