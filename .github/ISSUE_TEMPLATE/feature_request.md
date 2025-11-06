@@ -1,63 +1,92 @@
 ---
-name: ✨ Feature Request
-about: Sugerir una nueva funcionalidad para MostroWeb
+name: ✨ Solicitud de Feature
+about: Propone una nueva funcionalidad para MostroWeb
 title: '[FEATURE] '
 labels: enhancement
 assignees: ''
----
-
-## ✨ Descripción de la Funcionalidad
-
-Una descripción clara y concisa de qué funcionalidad te gustaría que se agregue.
-
-## 🎯 Problema que Resuelve
-
-¿Está relacionada con un problema? Por favor descríbelo.
-Ejemplo: "Es frustrante cuando [...]"
-
-## 💡 Solución Propuesta
-
-Una descripción clara y concisa de lo que quieres que suceda.
-
-## 🔄 Alternativas Consideradas
-
-Una descripción clara y concisa de cualquier solución o funcionalidad alternativa que hayas considerado.
-
-## 📊 Casos de Uso
-
-Describe cómo usarías esta funcionalidad:
-
-1. Como [tipo de usuario], quiero [acción]...
-2. Para poder [beneficio]...
-
-## 🎨 Mockups o Ejemplos
-
-Si tienes algún mockup, screenshot o ejemplo de cómo debería verse/funcionar, agrégalo aquí.
-
-## 🌟 Prioridad
-
-¿Qué tan importante es esta funcionalidad para ti?
-
-- [ ] Critical (bloqueador para usar la app)
-- [ ] High (muy deseada)
-- [ ] Medium (sería bueno tenerla)
-- [ ] Low (nice to have)
-
-## 📝 Información Adicional
-
-Cualquier contexto adicional o información sobre la feature request.
-
-## 🤝 ¿Estarías dispuesto a contribuir?
-
-- [ ] Sí, puedo implementar esto
-- [ ] Sí, puedo ayudar con testing
-- [ ] Sí, puedo ayudar con documentación
-- [ ] No, solo reportando la idea
 
 ---
 
-### 💡 Tips
+## ✨ Descripción del Feature
 
-- Revisa los [issues existentes](https://github.com/abcb1122/mostroweb/issues) para ver si alguien ya sugirió algo similar
-- Considera la complejidad y compatibilidad con el protocolo Mostro
-- Piensa en cómo afectaría a otros usuarios
+**Descripción clara de la funcionalidad que te gustaría ver:**
+
+
+## 💡 Motivación
+
+**¿Qué problema resolvería este feature?**
+
+
+**¿Por qué es importante para ti o tu caso de uso?**
+
+
+## 🎯 Caso de Uso
+
+**Describe un escenario específico donde usarías este feature:**
+
+**Ejemplo:**
+> Como trader en Argentina, quiero poder [hacer X] para poder [lograr Y]
+
+
+## 📝 Propuesta de Implementación
+
+**¿Cómo imaginas que funcionaría? (opcional)**
+
+
+**¿Sería un nuevo comando, una mejora a uno existente, o algo más?**
+- [ ] Nuevo comando (ej: `/micomando`)
+- [ ] Mejora a comando existente
+- [ ] Mejora visual/UX
+- [ ] Integración con servicio externo
+- [ ] Otro: _______
+
+## 🌍 Relevancia LATAM
+
+**¿Este feature es especialmente útil para usuarios de LATAM?**
+- [ ] Sí
+- [ ] No
+- [ ] Indiferente
+
+**Si sí, ¿para qué país(es) específicos?**
+- [ ] Argentina
+- [ ] Venezuela
+- [ ] Cuba
+- [ ] México
+- [ ] España
+- [ ] Toda LATAM
+- [ ] Otro: _______
+
+## 🎨 Mockup / Ejemplo Visual (opcional)
+
+**Si tienes una idea visual de cómo se vería, compártela aquí:**
+
+
+## 📊 Prioridad (tu opinión)
+
+**¿Qué tan importante es este feature para ti?**
+- [ ] 🔥 Crítico - Lo necesito para usar MostroWeb
+- [ ] 🟡 Importante - Mejoraría mucho mi experiencia
+- [ ] 🟢 Nice to have - Sería útil pero no esencial
+
+## 🔗 Referencias
+
+**¿Otros clientes Mostro o apps P2P tienen algo similar?**
+
+
+**¿Algún link relevante? (NIP, documentación, etc.)**
+
+
+---
+
+## ✅ Checklist (para el reporter)
+
+- [ ] Describí claramente qué quiero
+- [ ] Expliqué por qué es útil
+- [ ] Di un ejemplo concreto de uso
+- [ ] Busqué si ya existe un issue similar
+
+---
+
+**Gracias por contribuir ideas para mejorar MostroWeb!** 🎉
+
+Si quieres colaborar implementando este feature, avísanos en los comentarios. Toda ayuda es bienvenida! 👨‍💻👩‍💻

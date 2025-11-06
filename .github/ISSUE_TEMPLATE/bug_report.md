@@ -1,70 +1,81 @@
 ---
 name: 🐛 Reporte de Bug
-about: Reportar un error o comportamiento inesperado
+about: Reporta un bug o problema en MostroWeb
 title: '[BUG] '
 labels: bug
 assignees: ''
+
 ---
 
 ## 🐛 Descripción del Bug
 
-Una descripción clara y concisa del bug.
+**Descripción clara y concisa del problema:**
 
-## 📋 Pasos para Reproducir
+
+## 🔍 Pasos para Reproducir
 
 1. Ir a '...'
-2. Ejecutar comando '...'
-3. Hacer clic en '...'
-4. Ver error
+2. Ejecutar el comando '...'
+3. Observar el error '...'
 
 ## ✅ Comportamiento Esperado
 
-Una descripción clara de lo que esperabas que sucediera.
+**Descripción de lo que esperabas que sucediera:**
+
 
 ## ❌ Comportamiento Actual
 
-Una descripción clara de lo que sucede actualmente.
+**Descripción de lo que realmente sucede:**
 
-## 🖼️ Screenshots
 
-Si es aplicable, añade screenshots para ayudar a explicar el problema.
+## 📸 Capturas de Pantalla
 
-## 🌍 Entorno
+**Si aplica, añade capturas de pantalla para explicar el problema:**
 
-**Desktop:**
-- OS: [ej. macOS 13, Windows 11, Ubuntu 22.04]
-- Navegador: [ej. Chrome 120, Firefox 121, Safari 17]
-- Versión de MostroWeb: [ej. 1.0.0]
 
-**Mobile:**
-- Dispositivo: [ej. iPhone 14, Samsung Galaxy S23]
-- OS: [ej. iOS 17, Android 14]
-- Navegador: [ej. Safari, Chrome]
-- Versión de MostroWeb: [ej. 1.0.0]
+## 🖥️ Entorno
 
-## 🔍 Logs del Navegador
-
-Si es aplicable, pega los logs de la consola del navegador (F12 → Console):
+**Por favor ejecuta `/status` en MostroWeb y pega el resultado aquí:**
 
 ```
-Pega los logs aquí
+(pegar output de /status aquí)
 ```
 
-## 📝 Información Adicional
+**Sistema Operativo:** [Windows / macOS / Linux]
+**Navegador:** [Chrome / Firefox / Safari / Edge]
+**Versión del Navegador:** [ej: 120.0.6099.109]
 
-Cualquier información adicional sobre el problema.
+## 🧪 Resultado de /testconnection
 
-## 🔗 Enlaces Relacionados
+**Por favor ejecuta `/testconnection` y pega el resultado:**
 
-- Link a la orden (si aplica):
-- Link a la transacción (si aplica):
+```
+(pegar output de /testconnection aquí)
+```
+
+## 📋 Contexto Adicional
+
+**¿Qué estabas intentando hacer cuando ocurrió el problema?**
+
+
+**¿El problema ocurre siempre o solo a veces?**
+- [ ] Siempre
+- [ ] A veces
+- [ ] Solo la primera vez
+
+**¿Alguna información adicional que pueda ayudar?**
+
 
 ---
 
-### ⚠️ Recordatorio de Privacidad
+## ✅ Checklist (para el reporter)
 
-**NO** incluyas información sensible en el reporte:
-- ❌ Claves privadas (nsec)
-- ❌ Invoices Lightning con fondos reales
-- ❌ Información personal identificable
-- ✅ Puedes usar datos de testnet o ejemplos ficticios
+- [ ] Ejecuté `/status` y pegué el resultado
+- [ ] Ejecuté `/testconnection` y pegué el resultado
+- [ ] Incluí pasos claros para reproducir
+- [ ] Añadí capturas si es relevante
+- [ ] Busqué si ya existe un issue similar
+
+---
+
+**Gracias por reportar este bug! Esto ayuda a mejorar MostroWeb para toda la comunidad.** 🚀
