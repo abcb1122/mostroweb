@@ -1,0 +1,581 @@
+/**
+ * Components CSS
+ * Componentes reutilizables de la UI
+ */
+
+/* ============================================
+   OUTPUT LINE TYPES - MODO CHAT COMPACTO
+   ============================================ */
+.output-line {
+  margin-bottom: 2px;                       /* Más denso: 2px en vez de var(--spacing-xs) */
+  line-height: var(--line-height-compact);  /* 1.3 para chat compacto */
+  padding: 1px 0;                           /* Padding mínimo */
+  /* Habilitar selección de texto */
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+.output-line.info {
+  color: var(--text-info);
+  padding: 2px 0;
+}
+
+.output-line.success {
+  color: var(--text-success);
+  padding: 2px 0;
+}
+
+.output-line.error {
+  color: var(--text-error);
+  padding: 2px 0;
+}
+
+.output-line.warning {
+  color: var(--text-warning);
+  padding: 2px 0;
+}
+
+.output-line.dim {
+  color: var(--text-dim);
+}
+
+/* Prefijos de mensajes */
+.output-prefix {
+  font-weight: bold;
+  margin-right: var(--spacing-xs);
+}
+
+.output-prefix.info::before {
+  content: '[INFO] ';
+}
+
+.output-prefix.success::before {
+  content: '[SUCCESS] ';
+}
+
+.output-prefix.error::before {
+  content: '[ERROR] ';
+}
+
+.output-prefix.warning::before {
+  content: '[WARNING] ';
+}
+
+.output-prefix.system::before {
+  content: '[SYSTEM] ';
+}
+
+/* ============================================
+   WELCOME BANNER
+   ============================================ */
+.welcome-banner {
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-lg);
+  border: 1px solid var(--border-color);
+  padding: var(--spacing-md);
+  background: rgba(0, 255, 0, 0.02);
+}
+
+.welcome-banner .title {
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: var(--spacing-sm);
+  text-align: center;
+}
+
+.welcome-banner .subtitle {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 24px;
+  margin-bottom: var(--spacing-md);
+}
+
+.welcome-banner .info {
+  color: var(--text-secondary);
+  font-size: 20px;
+  line-height: 2;
+}
+
+.welcome-banner .separator {
+  border-top: 1px solid var(--border-color);
+  margin: var(--spacing-md) 0;
+}
+
+/* ============================================
+   COMMAND HINT
+   ============================================ */
+.command-hint {
+  color: var(--text-dim);
+  font-style: italic;
+  margin-top: var(--spacing-xs);
+  font-size: 13px;
+}
+
+.command-hint strong {
+  color: var(--text-secondary);
+  font-weight: bold;
+}
+
+/* ============================================
+   COMMAND ECHO - ESTILO CHAT
+   ============================================ */
+.command-echo {
+  color: var(--text-primary);
+  font-weight: bold;
+  margin-bottom: 4px;                       /* Reducido: 4px en vez de 6px */
+  padding: 4px 8px;                         /* Padding tipo mensaje */
+  background: rgba(0, 230, 118, 0.05);      /* Fondo sutil */
+  border-left: 3px solid var(--text-success); /* Borde tipo chat */
+  /* Habilitar selección de texto */
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+.command-echo::before {
+  content: '> ';
+  color: var(--text-success);
+  margin-right: 4px;
+}
+
+/* ============================================
+   HELP TABLE - COMPACTO
+   ============================================ */
+.help-table {
+  width: 100%;
+  margin: var(--spacing-sm) 0;      /* Reducido */
+}
+
+.help-section {
+  margin-bottom: var(--spacing-md);  /* Reducido de lg a md */
+}
+
+.help-section-title {
+  color: var(--text-primary);
+  font-weight: bold;
+  font-size: 15px;
+  margin-bottom: var(--spacing-sm);
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: var(--spacing-xs);
+}
+
+.help-command {
+  display: flex;
+  margin-bottom: var(--spacing-sm);
+  padding-left: var(--spacing-md);
+}
+
+.help-command-name {
+  color: var(--text-success);
+  font-weight: bold;
+  min-width: 200px;
+}
+
+.help-command-desc {
+  color: var(--text-secondary);
+  flex: 1;
+}
+
+/* ============================================
+   BOX/CONTAINER - COMPACTO
+   ============================================ */
+.box {
+  border: 1px solid var(--border-color);
+  padding: var(--spacing-sm);        /* Reducido de md a sm */
+  margin: var(--spacing-sm) 0;       /* Reducido de md a sm */
+  background: rgba(0, 255, 0, 0.02);
+}
+
+.box-title {
+  color: var(--text-primary);
+  font-weight: bold;
+  margin-bottom: var(--spacing-sm);
+  font-size: 14px;
+}
+
+.box-content {
+  color: var(--text-secondary);
+}
+
+/* ============================================
+   LOADING INDICATOR
+   ============================================ */
+.loading {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  color: var(--text-warning);
+}
+
+.loading-spinner {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--text-dim);
+  border-top-color: var(--text-warning);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================
+   PROGRESS BAR
+   ============================================ */
+.progress-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin: var(--spacing-sm) 0;
+}
+
+.progress-bar-fill {
+  flex: 1;
+  height: 10px;
+  border: 1px solid var(--border-color);
+  position: relative;
+  background: var(--bg-secondary);
+}
+
+.progress-bar-fill::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: var(--progress, 0%);
+  background: var(--text-success);
+  transition: width var(--transition-normal);
+}
+
+.progress-bar-text {
+  color: var(--text-secondary);
+  font-size: 12px;
+  min-width: 40px;
+  text-align: right;
+}
+
+/* ============================================
+   LIST STYLES
+   ============================================ */
+.list {
+  list-style: none;
+  padding-left: var(--spacing-md);
+}
+
+.list-item {
+  margin-bottom: var(--spacing-xs);
+  color: var(--text-secondary);
+}
+
+.list-item::before {
+  content: '• ';
+  color: var(--text-primary);
+  margin-right: var(--spacing-xs);
+}
+
+.list-item.numbered {
+  counter-increment: list-counter;
+}
+
+.list-item.numbered::before {
+  content: counter(list-counter) '. ';
+}
+
+/* ============================================
+   ASCII ART RESPONSIVE
+   ============================================ */
+.ascii-art {
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  line-height: 1.1;
+  margin: var(--spacing-sm) 0;
+  text-align: center;
+  white-space: pre;
+}
+
+/* ASCII grande: Desktop y Tablet */
+.ascii-art-large {
+  display: block;
+}
+
+/* Logo móvil: solo en pantallas pequeñas */
+.ascii-art-mobile {
+  display: none;
+  font-size: 18px;
+  border: 2px solid var(--border-color);
+  padding: var(--spacing-md);
+  margin: var(--spacing-sm) 0;
+  line-height: 1.5;
+}
+
+/* Desktop: ASCII completo grande */
+@media (min-width: 769px) {
+  .ascii-art {
+    font-size: 16px;
+  }
+}
+
+/* Tablet: ASCII reducido */
+@media (max-width: 768px) {
+  .ascii-art {
+    font-size: 12px;
+  }
+}
+
+/* Móviles: Ocultar ASCII grande, mostrar logo simple */
+@media (max-width: 480px) {
+  .ascii-art-large {
+    display: none;
+  }
+
+  .ascii-art-mobile {
+    display: block;
+  }
+}
+
+/* ============================================
+   SEPARATOR
+   ============================================ */
+.separator {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: var(--spacing-md) 0;
+}
+
+.separator-thick {
+  border-top-width: 2px;
+}
+
+.separator-dashed {
+  border-top-style: dashed;
+}
+
+/* ============================================
+   BADGE
+   ============================================ */
+.badge {
+  display: inline-block;
+  padding: 2px 6px;
+  border: 1px solid var(--border-color);
+  font-size: 11px;
+  font-weight: bold;
+  margin: 0 var(--spacing-xs);
+}
+
+.badge.success {
+  color: var(--text-success);
+  border-color: var(--text-success);
+}
+
+.badge.error {
+  color: var(--text-error);
+  border-color: var(--text-error);
+}
+
+.badge.warning {
+  color: var(--text-warning);
+  border-color: var(--text-warning);
+}
+
+.badge.info {
+  color: var(--text-info);
+  border-color: var(--text-info);
+}
+
+/* ============================================
+   CODE BLOCK
+   ============================================ */
+.code-block {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  padding: var(--spacing-sm);
+  margin: var(--spacing-sm) 0;
+  overflow-x: auto;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.code-inline {
+  background: var(--bg-secondary);
+  color: var(--text-success);
+  padding: 2px 6px;
+  border: 1px solid var(--border-color);
+  font-family: var(--font-mono);
+}
+
+/* ============================================
+   HIGHLIGHT
+   ============================================ */
+.highlight {
+  color: var(--text-primary);
+  font-weight: bold;
+  text-shadow: 0 0 3px var(--glow-color);
+}
+
+.highlight-success {
+  color: var(--text-success);
+}
+
+.highlight-error {
+  color: var(--text-error);
+}
+
+.highlight-warning {
+  color: var(--text-warning);
+}
+
+.highlight-info {
+  color: var(--text-info);
+}
+
+/* ============================================
+   TEXT SELECTION - ELEMENTOS CRÍTICOS
+   ============================================ */
+/* Forzar selección en elementos críticos (claves npub/nsec) */
+.output-line.success,
+.output-line.warning,
+.output-line.error {
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  user-select: text !important;
+  cursor: text !important;
+}
+
+/* Asegurar selección en todos los contenedores de texto */
+.box-content,
+.code-block,
+.help-command-desc {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* Elementos decorativos NO seleccionables */
+.output-prefix::before,
+.command-echo::before,
+.list-item::before,
+.badge,
+.status-icon {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* ============================================
+   FORZAR SELECCIÓN DE TEXTO - SOLUCIÓN AGRESIVA
+   ============================================ */
+.terminal-output,
+.terminal-output *,
+.output-line,
+.output-line *,
+.command-echo,
+.command-echo *,
+[class*="output-line"],
+[class*="output-line"] * {
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  user-select: text !important;
+  cursor: text !important;
+  pointer-events: auto !important;
+}
+
+/* Forzar especialmente en elementos críticos */
+.output-line.success *,
+.output-line.warning *,
+.output-line.error *,
+.output-line.info * {
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  user-select: text !important;
+  cursor: text !important;
+}
+
+/* Estilos para campos de clave copiables */
+.key-container {
+  margin: 15px 0;
+}
+
+.key-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #333;
+}
+
+.key-field {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.key-input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #f8f9fa;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  user-select: all;
+  cursor: text;
+}
+
+.copy-btn {
+  padding: 10px 16px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.copy-btn:hover {
+  background: #218838;
+}
+
+/* Para hacer el texto seleccionable incluso en elementos de display normal */
+.output-line {
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+}
+
+/* Hacer todo el texto de la aplicación seleccionable */
+#terminal-output,
+.terminal-output,
+.output-line,
+.command-echo,
+.terminal-container,
+.help-content,
+.terminal-input-container {
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  cursor: text;
+}
+
+/* Mejorar visibilidad para líneas de clave */
+.output-line.success,
+.output-line.warning {
+  font-family: 'Courier New', monospace;
+  padding: 2px 4px;
+  margin: 2px 0;
+}
+/* Cache refresh Wed Nov  5 02:48:44 UTC 2025 */
+/* FORCE GITHUB PAGES REFRESH - Wed Nov  5 03:22:29 UTC 2025 */

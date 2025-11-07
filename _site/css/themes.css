@@ -1,0 +1,205 @@
+/**
+ * Themes CSS
+ * Diferentes temas de colores para el terminal
+ */
+
+/* ============================================
+   TEMA AMBER (ÁMBAR)
+   ============================================ */
+body.theme-amber {
+  --text-primary: #ffb000;
+  --text-secondary: #cc8800;
+  --text-dim: #996600;
+  --text-success: #ffb000;
+  --cursor-color: #ffb000;
+  --selection-bg: #332200;
+  --selection-text: #ffb000;
+  --border-color: #664400;
+  --glow-color: rgba(255, 176, 0, 0.3);
+  --bg-secondary: #110800;
+}
+
+/* ============================================
+   TEMA BLUE (AZUL CYAN)
+   ============================================ */
+body.theme-blue {
+  --text-primary: #00aaff;
+  --text-secondary: #0088cc;
+  --text-dim: #005588;
+  --text-success: #00aaff;
+  --cursor-color: #00aaff;
+  --selection-bg: #002244;
+  --selection-text: #00aaff;
+  --border-color: #003366;
+  --glow-color: rgba(0, 170, 255, 0.3);
+  --bg-secondary: #000811;
+}
+
+/* ============================================
+   TEMA WHITE (PAPEL VERDE)
+   ============================================ */
+body.theme-white {
+  --bg-primary: #0a0f0a;
+  --bg-secondary: #0d140d;
+  --text-primary: #aaffaa;
+  --text-secondary: #88cc88;
+  --text-dim: #446644;
+  --text-success: #aaffaa;
+  --cursor-color: #aaffaa;
+  --selection-bg: #1a3a1a;
+  --selection-text: #aaffaa;
+  --border-color: #225522;
+  --glow-color: rgba(170, 255, 170, 0.2);
+}
+
+/* ============================================
+   TEMA RED (ALERTA)
+   ============================================ */
+body.theme-red {
+  --text-primary: #ff3333;
+  --text-secondary: #cc2222;
+  --text-dim: #881111;
+  --text-success: #ff3333;
+  --cursor-color: #ff3333;
+  --selection-bg: #330000;
+  --selection-text: #ff3333;
+  --border-color: #660000;
+  --glow-color: rgba(255, 51, 51, 0.3);
+  --bg-secondary: #110000;
+}
+
+/* ============================================
+   TEMA PURPLE (RETRO)
+   ============================================ */
+body.theme-purple {
+  --text-primary: #ff00ff;
+  --text-secondary: #cc00cc;
+  --text-dim: #880088;
+  --text-success: #ff00ff;
+  --cursor-color: #ff00ff;
+  --selection-bg: #330033;
+  --selection-text: #ff00ff;
+  --border-color: #660066;
+  --glow-color: rgba(255, 0, 255, 0.3);
+  --bg-secondary: #110011;
+}
+
+/* ============================================
+   TEMA MATRIX (VERDE INTENSO)
+   ============================================ */
+body.theme-matrix {
+  --bg-primary: #000000;
+  --bg-secondary: #001100;
+  --text-primary: #00e676;
+  --text-secondary: #00c853;
+  --text-dim: #00a040;
+  --text-success: #00e676;
+  --cursor-color: #00e676;
+  --selection-bg: #003311;
+  --selection-text: #00e676;
+  --border-color: #004411;
+  --glow-color: rgba(0, 230, 118, 0.25);
+}
+
+/* Efecto adicional Matrix */
+body.theme-matrix .terminal-container::before {
+  background: linear-gradient(
+    transparent 50%,
+    rgba(0, 255, 65, 0.03) 50%
+  );
+}
+
+/* ============================================
+   TEMA DOS (BLANCO SOBRE AZUL)
+   ============================================ */
+body.theme-dos {
+  --bg-primary: #0000aa;
+  --bg-secondary: #0000cc;
+  --text-primary: #ffffff;
+  --text-secondary: #dddddd;
+  --text-dim: #aaaaaa;
+  --text-success: #ffff00;
+  --text-error: #ff5555;
+  --cursor-color: #ffffff;
+  --selection-bg: #0000ff;
+  --selection-text: #ffffff;
+  --border-color: #5555ff;
+  --glow-color: rgba(255, 255, 255, 0.2);
+  --scanline-color: rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================
+   TEMA HACKER (VERDE OSCURO)
+   ============================================ */
+body.theme-hacker {
+  --bg-primary: #000000;
+  --bg-secondary: #0a0a0a;
+  --text-primary: #00e676;
+  --text-secondary: #00c853;
+  --text-dim: #00a040;
+  --text-success: #00e676;
+  --cursor-color: #00e676;
+  --selection-bg: #002200;
+  --selection-text: #00e676;
+  --border-color: #003300;
+  --glow-color: rgba(0, 230, 118, 0.25);
+}
+
+/* Efecto glitch para tema hacker */
+body.theme-hacker .terminal-title {
+  animation: glitch 5s infinite;
+}
+
+@keyframes glitch {
+  0%, 90%, 100% {
+    transform: translate(0);
+  }
+  92% {
+    transform: translate(-2px, 2px);
+  }
+  94% {
+    transform: translate(2px, -2px);
+  }
+  96% {
+    transform: translate(-2px, -2px);
+  }
+  98% {
+    transform: translate(2px, 2px);
+  }
+}
+
+/* ============================================
+   PREFERENCIAS DE ACCESIBILIDAD
+   ============================================ */
+
+/* Reduce movimiento si el usuario lo prefiere */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Alto contraste */
+@media (prefers-contrast: high) {
+  :root {
+    --glow-color: transparent;
+    --scanline-color: transparent;
+  }
+
+  .terminal-container::before {
+    display: none;
+  }
+
+  body {
+    text-shadow: none;
+  }
+
+  .terminal-output,
+  .terminal-input {
+    text-shadow: none;
+  }
+}
