@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Cliente web terminal retro para Mostro P2P - Bitcoin Lightning Network">
+  <title>MostroWeb Terminal</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/terminal.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/themes.css">
+
+  <!-- External Libraries (CDN) -->
+  <!-- UUID -->
+  <script src="https://cdn.jsdelivr.net/npm/uuid@10.0.0/dist/umd/uuid.min.js"></script>
+
+  <!-- Crypto-JS -->
+  <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.2.0/crypto-js.min.js"></script>
+
+  <!-- QRCode.js -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+  <!-- Terminal Container -->
+  <div id="terminal-container" class="terminal-container">
+
+    <!-- Terminal Header -->
+    <div class="terminal-header">
+      <div class="terminal-title">
+        <span class="title-icon">⚡</span>
+        <span class="title-text">MOSTRO P2P TERMINAL</span>
+        <span class="title-version">v1.0.0</span>
+      </div>
+      <div class="terminal-controls">
+        <button class="btn-control btn-minimize" title="Minimize" aria-label="Minimize">_</button>
+        <button class="btn-control btn-maximize" title="Maximize" aria-label="Maximize">□</button>
+        <button class="btn-control btn-close" title="Close" aria-label="Close">×</button>
+      </div>
+    </div>
+
+    <!-- Terminal Output Area -->
+    <div id="terminal-output" class="terminal-output">
+      <!-- Welcome message will be added by JS -->
+    </div>
+
+    <!-- Terminal Input Line -->
+    <div class="terminal-input-line">
+      <span class="prompt">mostro&gt;</span>
+      <input
+        type="text"
+        id="terminal-input"
+        class="terminal-input"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false"
+        autofocus
+        aria-label="Terminal command input"
+      />
+      <span class="cursor" aria-hidden="true">_</span>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="terminal-statusbar">
+      <span class="status-item status-relays">
+        <span class="status-icon">⚫</span>
+        <span class="status-text" id="status-relays-text">OFFLINE</span>
+      </span>
+      <span class="status-item status-orders">
+        <span class="status-text" id="status-orders-text">Órdenes: 0</span>
+      </span>
+      <span class="status-item status-help">
+        <span class="status-text">Escribe <strong>/help</strong> para ver comandos</span>
+      </span>
+    </div>
+
+  </div>
+
+  <!-- JavaScript Modules -->
+  <!-- nostr-tools (ES Module) -->
+  <script type="module">
+    import * as nostrTools from 'https://esm.sh/nostr-tools@2.5.2';
+    window.nostrTools = nostrTools;
+
+    // Dispatch event when nostr-tools is loaded
+    window.dispatchEvent(new CustomEvent('nostr-tools-loaded'));
+  </script>
+
+  <!-- Application Scripts (type="module" for ES6 imports) -->
+  <!-- Utils -->
+  <script type="module" src="js/utils/constants.js"></script>
+  <script type="module" src="js/utils/logger.js"></script>
+  <script type="module" src="js/utils/helpers.js"></script>
+  <script type="module" src="js/utils/inputHelpers.js"></script>
+
+  <!-- Models -->
+  <script type="module" src="js/models/Order.js"></script>
+  <script type="module" src="js/models/Mostro.js"></script>
+
+  <!-- Core -->
+  <script type="module" src="js/core/storage.js"></script>
+  <script type="module" src="js/core/keyManager.js"></script>
+  <script type="module" src="js/core/relayManager.js"></script>
+
+  <!-- Mostro -->
+  <script type="module" src="js/mostro/discovery.js"></script>
+
+  <!-- UI -->
+  <script type="module" src="js/ui/display.js"></script>
+  <script type="module" src="js/ui/commands.js"></script>
+  <script type="module" src="js/ui/terminal.js"></script>
+
+  <!-- Main -->
+  <script type="module" src="js/main.js"></script>
+<script>
+function copyToClipboard(elementId) {
+  const element = document.getElementById(elementId);
+  element.select();
+  element.setSelectionRange(0, 99999);
+  navigator.clipboard.writeText(element.value)
+    .then(() => {
+      const btn = element.nextElementSibling;
+      const originalText = btn.textContent;
+      btn.textContent = '¡Copiado!';
+      setTimeout(() => {
+        btn.textContent = originalText;
+      }, 2000);
+    })
+    .catch(err => {
+      console.error('Error al copiar: ', err);
+    });
+}
+</script>
+</body>
+</html>
+<- All 107 tests Cache refresh Wed Nov  5 03:25:57 UTC 2025 -->
+<- All 107 tests Trading commands refresh Wed Nov  5 04:05:41 UTC 2025 -->
