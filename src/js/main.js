@@ -9,6 +9,7 @@ import Terminal from './ui/terminal.js';
 import KeyManager from './core/keyManager.js';
 import RelayManager from './core/relayManager.js';
 import Discovery from './mostro/discovery.js';
+import OnboardingWizard from './ui/wizard.js';
 
 /**
  * Estado global de la aplicación
@@ -77,6 +78,15 @@ async function init() {
     window.dispatchEvent(new CustomEvent('app:ready', {
       detail: { app }
     }));
+
+    // Ejecutar wizard de onboarding si es primera vez
+    if (OnboardingWizard.isFirstTime()) {
+      Logger.info('Main: First time user detected, showing onboarding wizard');
+      // Esperar un momento para que el terminal esté completamente listo
+      setTimeout(() => {
+        OnboardingWizard.run();
+      }, 500);
+    }
 
   } catch (error) {
     Logger.error('Main: Initialization failed', error);

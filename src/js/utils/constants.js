@@ -4,23 +4,24 @@
  */
 
 // Versión de la aplicación
-export const APP_VERSION = '0.1.0';
+export const APP_VERSION = '1.0.0';
 export const APP_NAME = 'MostroWeb';
 
 // Relays Nostr públicos por defecto
 export const DEFAULT_RELAYS = [
-  'wss://relay.damus.io',
-  'wss://nostr-pub.wellorder.net',
-  'wss://nos.lol',
-  'wss://relay.snort.social',
-  'wss://relay.nostr.band'
+  'wss://relay.mostro.network',    // Relay oficial de Mostro (prioridad)
+  'wss://relay.damus.io',          // Relay público ampliamente usado
+  'wss://nostr-pub.wellorder.net', // Relay público wellorder
+  'wss://nos.lol',                 // Relay público nos
+  'wss://relay.snort.social',      // Relay público snort
+  'wss://relay.nostr.band'         // Relay con índice completo de eventos
 ];
 
 // Tipos de eventos Nostr
 export const NOSTR_KINDS = {
   GIFT_WRAP: 1059,      // NIP-59 - Mensajes privados encriptados
   SEAL: 13,             // NIP-59 - Seal event interno
-  REPLACEABLE: 34242,   // NIP-33 - Órdenes públicas Mostro
+  P2P_ORDER: 38383,     // NIP-69 - P2P Order events (Mostro protocol)
   DIRECT_MESSAGE: 4     // NIP-04 - Mensajes directos (legacy)
 };
 
@@ -199,6 +200,7 @@ export const PATTERNS = {
 // Comandos disponibles (Fase 1 - básicos)
 export const COMMANDS = {
   HELP: '/help',
+  TUTORIAL: '/tutorial',
   CLEAR: '/clear',
   THEME: '/theme',
   VERSION: '/version',
@@ -228,6 +230,20 @@ export const COMMANDS = {
   TAKESELL: '/takesell',
   CANCEL: '/cancel',
 
+  // Fase 4 - Lightning & Payment Flow
+  ADDINVOICE: '/addinvoice',
+  FIATSENT: '/fiatsent',
+  RELEASE: '/release',
+
+  // Fase 5 - Utilities & History
+  HISTORY: '/history',
+  MYSTATS: '/mystats',
+  SHOWQR: '/showqr',
+
+  // Testing & Diagnostics
+  TESTCONNECTION: '/testconnection',
+  TESTINGGUIDE: '/testingguide',
+
   // Deprecated/Alias (usar /neworder)
   RESTORE: '/restore',
   NEWSELL: '/newsell',
@@ -240,6 +256,11 @@ export const COMMAND_INFO = {
     description: 'Mostrar comandos disponibles',
     usage: '/help [command]',
     aliases: ['?', 'h']
+  },
+  [COMMANDS.TUTORIAL]: {
+    description: 'Mostrar guía completa paso a paso para usar MostroWeb',
+    usage: '/tutorial',
+    aliases: ['guide', 'onboarding']
   },
   [COMMANDS.CLEAR]: {
     description: 'Limpiar salida del terminal',
@@ -257,9 +278,9 @@ export const COMMAND_INFO = {
     aliases: ['v', 'ver']
   },
   [COMMANDS.STATUS]: {
-    description: 'Mostrar estado de conexión',
+    description: 'Mostrar estado completo del sistema con métricas',
     usage: '/status',
-    aliases: ['stat']
+    aliases: ['stat', 'stats']
   },
   [COMMANDS.START]: {
     description: 'Generar nueva identidad Nostr para tradear',
@@ -351,6 +372,48 @@ export const COMMAND_INFO = {
     description: 'Cancelar una orden pendiente',
     usage: '/cancel <order-id>',
     examples: ['/cancel abc123def456']
+  },
+  [COMMANDS.ADDINVOICE]: {
+    description: 'Añadir invoice Lightning para recibir pago (compradores)',
+    usage: '/addinvoice <order-id> <lightning-invoice>',
+    examples: ['/addinvoice abc123def456 lnbc1000...']
+  },
+  [COMMANDS.FIATSENT]: {
+    description: 'Notificar que enviaste el pago fiat (compradores)',
+    usage: '/fiatsent <order-id>',
+    examples: ['/fiatsent abc123def456']
+  },
+  [COMMANDS.RELEASE]: {
+    description: 'Liberar satoshis al comprador después de recibir fiat (vendedores)',
+    usage: '/release <order-id>',
+    examples: ['/release abc123def456']
+  },
+  [COMMANDS.HISTORY]: {
+    description: 'Ver historial de notificaciones y eventos recientes',
+    usage: '/history [limit]',
+    examples: ['/history', '/history 20']
+  },
+  [COMMANDS.MYSTATS]: {
+    description: 'Ver tus estadísticas de trading',
+    usage: '/mystats',
+    examples: ['/mystats']
+  },
+  [COMMANDS.SHOWQR]: {
+    description: 'Mostrar código QR para Lightning invoice o dirección',
+    usage: '/showqr <invoice-o-data>',
+    examples: ['/showqr lnbc1000...', '/showqr bc1q...']
+  },
+  [COMMANDS.TESTCONNECTION]: {
+    description: 'Ejecutar prueba automática de conexión y compatibilidad',
+    usage: '/testconnection',
+    aliases: ['test', 'check'],
+    examples: ['/testconnection']
+  },
+  [COMMANDS.TESTINGGUIDE]: {
+    description: 'Mostrar guía de testing paso a paso',
+    usage: '/testingguide',
+    aliases: ['testing', 'testguide'],
+    examples: ['/testingguide']
   }
 };
 

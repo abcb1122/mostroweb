@@ -1,0 +1,14 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 💬 Comunidad Nostr
+    url: https://nostr.com
+    about: Únete a la comunidad Nostr para discusiones generales
+  - name: 📚 Documentación
+    url: https://github.com/abcb1122/mostroweb#readme
+    about: Lee la documentación completa de MostroWeb
+  - name: 🚀 Protocolo Mostro
+    url: https://github.com/MostroP2P/mostro
+    about: Repositorio oficial del protocolo Mostro
+  - name: ⚡ p2p.band
+    url: https://p2p.band
+    about: Explora órdenes P2P en Nostr

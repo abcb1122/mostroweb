@@ -184,7 +184,7 @@ Todos los mensajes siguen este formato:
 - Timestamp randomizado (±2 días)
 - Contenido: Seal event (kind 13)
 
-#### B. Replaceable Events (Kind 34242 - NIP-33)
+#### B. Replaceable Events (Kind 38383 - NIP-33)
 **Uso:** Publicación de órdenes públicas (descubribles por todos)
 
 **Características:**
@@ -196,7 +196,7 @@ Todos los mensajes siguen este formato:
 **Filtro de descubrimiento:**
 ```javascript
 {
-  kinds: [34242],
+  kinds: [38383],
   "#y": ["mostrop2p"],  // Marketplace identifier
   "#z": ["order"],       // Event type
   "#s": ["pending"]      // Status filter (opcional)
@@ -394,12 +394,12 @@ displaySuccess('Orden creada');
 ```javascript
 // CORRECTO: Usar async/await
 async function fetchOrders() {
-  const events = await pool.list(DEFAULT_RELAYS, [{ kinds: [34242] }]);
+  const events = await pool.list(DEFAULT_RELAYS, [{ kinds: [38383] }]);
   return events.map(parseOrder);
 }
 
 // EVITAR: Callbacks anidados (callback hell)
-pool.list(DEFAULT_RELAYS, [{ kinds: [34242] }], (events) => {
+pool.list(DEFAULT_RELAYS, [{ kinds: [38383] }], (events) => {
   events.forEach((event) => {
     parseOrder(event, (order) => {
       displayOrder(order);
@@ -896,7 +896,7 @@ async function fetchPublicOrders() {
   // Descubrir órdenes de TODOS los Mostros en los relays
   const events = await pool.list(DEFAULT_RELAYS, [
     {
-      kinds: [34242],
+      kinds: [38383],
       '#y': ['mostrop2p'],
       '#z': ['order'],
       '#s': ['pending', 'active']
@@ -1001,7 +1001,7 @@ Implementa el comando `/restore` que envía `RestoreSession` action a Mostro par
 **NO.** Mostro es un protocolo descentralizado. Cada Mostro daemon tiene su propia pubkey. Extrae la pubkey dinámicamente del evento de orden (`event.pubkey`).
 
 ### ¿Cómo descubro qué Mostros existen?
-Busca eventos Kind 34242 en relays públicos. El `pubkey` de cada evento identifica un Mostro daemon. No hay registro central.
+Busca eventos Kind 38383 en relays públicos. El `pubkey` de cada evento identifica un Mostro daemon. No hay registro central.
 
 ### ¿Puedo interactuar con múltiples Mostros a la vez?
 **SÍ.** Un usuario puede tener órdenes activas con varios Mostros simultáneamente. Guarda el `mostro_pubkey` por cada orden.
