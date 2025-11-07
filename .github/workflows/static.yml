@@ -35,9 +35,9 @@ jobs:
       - name: Prepare deployment directory
         run: |
           mkdir -p _site
-          cp index.html _site/
-          cp -r css _site/
-          cp -r js _site/
+          cp src/index.html _site/
+          cp -r src/css _site/
+          cp -r src/js _site/
           if [ -f .nojekyll ]; then
             cp .nojekyll _site/
           fi
